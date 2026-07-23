@@ -13,7 +13,7 @@ Esquema de fases: **números 1–N**.
 | Fase | Título | Estado | Depende de | Cierre |
 |------|--------|--------|-----------|--------|
 | 1 | Bootstrap infra (Next.js 16 + Supabase + Vercel) | pendiente | — | — |
-| 2 | Diseño visual con Agustín (colores, fuentes, estructura) | pendiente | 1 | — |
+| 2 | Diseño visual con Agustín (colores, fuentes, estructura) | DONE | 1 | 2026-07-23 |
 | 3 | Modelo de datos + Supabase (Postgres + Storage + RLS) | pendiente | 1 | — |
 | 4 | Admin con login (Supabase Auth) — CRUD + upload de renders | pendiente | 3 | — |
 | 5 | Galería + página de proyecto con animaciones | pendiente | 2, 4 | — |
@@ -29,6 +29,8 @@ Esquema de fases: **números 1–N**.
 
 **Stack confirmado:** Next.js 16 (no Vite). Optimización de imágenes con `next/image` + Supabase Storage transforms.
 
-## Pendiente próxima sesión (2026-07-23, con Agustín)
+## Próximos pasos
 
-Definir identidad visual (colores, fuentes, estructura, animaciones) con `/frontend-design`. Preguntas preparadas en memoria `dookdesign-agustin-session`.
+- **Fase 1** (Bootstrap Next.js + infra): arrancar primero, desbloquea Fase 3.
+- **Fase 3** (Modelo de datos): schema Supabase definido en el spec de Fase 2 — listo para implementar.
+- **Fase 2 spec**: `docs/superpowers/specs/2026-07-23-fase2-identidad-visual-design.md` — aprobado 2026-07-23.

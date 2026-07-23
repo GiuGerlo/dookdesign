@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #DEDEDE;
+  --surface: #EBEBEB;
+  --text-primary: #1A1A20;
+  --text-secondary: #5A5A6A;
+  --accent: #3532C5;
+  --accent-hover: #2926A8;
+}
+
+[data-theme="dark"] {
+  --bg: #323238;
+  --surface: #2A2A2F;
+  --text-primary: #F0F0F0;
+  --text-secondary: #9999A8;
+  --accent: #3532C5;
+  --accent-hover: #4A47D4;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-dm-sans), sans-serif;
+  transition: background-color 300ms, color 300ms;
+}

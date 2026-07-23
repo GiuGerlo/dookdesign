@@ -5,25 +5,27 @@
 
 ## 0. Requisitos locales
 
-- [ ] Node 24 LTS instalado (`node -v`).
-- [ ] pnpm instalado (`pnpm -v`). Si no: `npm i -g pnpm` (única vez que se toca npm, para instalar pnpm).
+- [X] Node 24 LTS instalado (`node -v`).
+- [X] pnpm instalado (`pnpm -v`). Si no: `npm i -g pnpm` (única vez que se toca npm, para instalar pnpm).
 
 ## 1. Supabase (DB + Storage + Auth) — free tier
 
-- [ ] Entrar a https://supabase.com → New project. Nombre: `dookdesign`. Region: la más cercana (South America / Brazil). Guardar la **DB password**.
-- [ ] Project Settings → **API**: copiar `Project URL`, `anon public key`, `service_role key`.
-- [ ] Storage → New bucket: `renders`, **Public** (para servir imágenes). Repetir con `thumbnails` si querés versiones chicas.
-- [ ] Authentication → Providers: dejar **Email** habilitado (login del admin).
-- [ ] Más adelante (fase admin): Authentication → Users → Add user → crear el usuario de Agustín (email + password). Solo ese usuario entra al `/admin`.
+- [X] Entrar a https://supabase.com → New project. Nombre: `dookdesign`. Region: la más cercana (South America / Brazil). Guardar la **DB password**.
+- [X] Project Settings → **API**: copiar `Project URL`, `anon public key`, `service_role key`.
+- [X] Storage → New bucket: `renders`, **Public** (para servir imágenes). Repetir con `thumbnails` si querés versiones chicas.
+- [ ] Más adelante (fase admin): Authentication → Users → Add user → crear usuario de Agustín:
+  - Email: `CODIGO@dookdesign.com` (CODIGO = número de 4 dígitos que elija Agustín, ej. `1234@dookdesign.com`)
+  - Password: su contraseña (máx. 16 caracteres)
+  - El login del admin muestra "Código" y "Contraseña" — el frontend mapea `código + "@dookdesign.com"` como email para Supabase Auth. Un único usuario, sin tabla custom.
 
 ## 2. Repo en GitHub (para deploy automático)
 
-- [ ] Crear repo `dookdesign` en GitHub (privado).
-- [ ] Conectar el repo local: el agente deja el `git init` hecho; vos hacés el primer commit y `git remote add origin ...` + push cuando quieras.
+- [X] Crear repo `dookdesign` en GitHub (privado).
+- [X] Conectar el repo local: el agente deja el `git init` hecho; vos hacés el primer commit y `git remote add origin ...` + push cuando quieras.
 
 ## 3. Vercel (deploy) — misma cuenta que giulianogerlo, free
 
-- [ ] https://vercel.com → Add New → Project → importar el repo `dookdesign`. Framework: **Next.js** (autodetecta).
+- [X] https://vercel.com → Add New → Project → importar el repo `dookdesign`. Framework: **Next.js** (autodetecta).
 - [ ] En el import, sección **Environment Variables**, cargar (ver paso 4).
 - [ ] Deploy. Queda en `dookdesign.vercel.app` (gratis).
 
@@ -51,4 +53,4 @@ Las mismas tres van cargadas también en **Vercel → Project → Settings → E
 
 ---
 
-**Estado:** ninguno de estos pasos está hecho todavía. Se van marcando a medida que arranquemos la fase 1 (bootstrap del código Next.js).
+**Estado (2026-07-23):** Supabase creado + claves copiadas + buckets creados + MCP conectado. Pendiente: Auth provider Email, GitHub repo, Vercel deploy, `.env.local`.
