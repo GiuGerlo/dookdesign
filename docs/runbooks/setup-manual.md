@@ -1,0 +1,54 @@
+# Setup manual — pasos que hace Giuliano (no el agente)
+
+> Todo lo que requiere tu mano: crear cuentas, proyectos, pegar claves. El agente NO puede hacer esto.
+> Marcá con [x] a medida que avances. Orden recomendado de arriba hacia abajo.
+
+## 0. Requisitos locales
+
+- [ ] Node 24 LTS instalado (`node -v`).
+- [ ] pnpm instalado (`pnpm -v`). Si no: `npm i -g pnpm` (única vez que se toca npm, para instalar pnpm).
+
+## 1. Supabase (DB + Storage + Auth) — free tier
+
+- [ ] Entrar a https://supabase.com → New project. Nombre: `dookdesign`. Region: la más cercana (South America / Brazil). Guardar la **DB password**.
+- [ ] Project Settings → **API**: copiar `Project URL`, `anon public key`, `service_role key`.
+- [ ] Storage → New bucket: `renders`, **Public** (para servir imágenes). Repetir con `thumbnails` si querés versiones chicas.
+- [ ] Authentication → Providers: dejar **Email** habilitado (login del admin).
+- [ ] Más adelante (fase admin): Authentication → Users → Add user → crear el usuario de Agustín (email + password). Solo ese usuario entra al `/admin`.
+
+## 2. Repo en GitHub (para deploy automático)
+
+- [ ] Crear repo `dookdesign` en GitHub (privado).
+- [ ] Conectar el repo local: el agente deja el `git init` hecho; vos hacés el primer commit y `git remote add origin ...` + push cuando quieras.
+
+## 3. Vercel (deploy) — misma cuenta que giulianogerlo, free
+
+- [ ] https://vercel.com → Add New → Project → importar el repo `dookdesign`. Framework: **Next.js** (autodetecta).
+- [ ] En el import, sección **Environment Variables**, cargar (ver paso 4).
+- [ ] Deploy. Queda en `dookdesign.vercel.app` (gratis).
+
+## 4. Variables de entorno
+
+Copiar `.env.example` → `.env.local` y rellenar con las claves de Supabase (paso 1):
+
+- [ ] `NEXT_PUBLIC_SUPABASE_URL` = Project URL
+- [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY` = anon public key
+- [ ] `SUPABASE_SERVICE_ROLE_KEY` = service_role key (⚠️ NUNCA al cliente, solo server)
+
+Las mismas tres van cargadas también en **Vercel → Project → Settings → Environment Variables** (Production + Preview).
+
+- [ ] `.env.local` cargado local.
+- [ ] Las 3 vars cargadas en Vercel.
+
+## 5. Supabase MCP (opcional, para que el agente maneje el schema)
+
+- [ ] Instalar el Supabase MCP (lo ofreciste). Cuando lo instales se crea/edita `.mcp.json` en el proyecto. Sirve para que el agente cree tablas y consulte la DB directo.
+
+## 6. Dominio (SOLO al lanzar, no ahora)
+
+- [ ] Comprar `dookdesign.com` (~USD 11/año) en Cloudflare Registrar (al costo) o Vercel (cómodo).
+- [ ] Vercel → Project → Settings → Domains → agregar `dookdesign.com` y seguir los DNS que indica.
+
+---
+
+**Estado:** ninguno de estos pasos está hecho todavía. Se van marcando a medida que arranquemos la fase 1 (bootstrap del código Next.js).
