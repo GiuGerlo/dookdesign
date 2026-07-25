@@ -24,11 +24,12 @@ export async function proxy(request: NextRequest) {
     }
   )
 
-  const { data: { session } } = await supabase.auth.getSession()
+  // getUser() revalida el token contra Supabase (getSession() no lo hace → spoofeable).
+  const { data: { user } } = await supabase.auth.getUser()
 
   const isLoginPage = request.nextUrl.pathname === '/admin/login'
 
-  if (!isLoginPage && !session) {
+  if (!isLoginPage && !user) {
     return NextResponse.redirect(new URL('/admin/login', request.url))
   }
 

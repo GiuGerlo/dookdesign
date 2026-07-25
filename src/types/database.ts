@@ -1,0 +1,112 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  public: {
+    Tables: {
+      categories: {
+        Row: { created_at: string; id: string; name: string; slug: string }
+        Insert: { created_at?: string; id?: string; name: string; slug: string }
+        Update: { created_at?: string; id?: string; name?: string; slug?: string }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          category_id: string | null
+          created_at: string
+          description: string
+          featured: boolean
+          id: string
+          materials: string[]
+          order: number
+          published: boolean
+          renders: string[]
+          slug: string
+          title: string
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string
+          description?: string
+          featured?: boolean
+          id?: string
+          materials?: string[]
+          order?: number
+          published?: boolean
+          renders?: string[]
+          slug: string
+          title: string
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string
+          description?: string
+          featured?: boolean
+          id?: string
+          materials?: string[]
+          order?: number
+          published?: boolean
+          renders?: string[]
+          slug?: string
+          title?: string
+          updated_at?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'projects_category_id_fkey'
+            columns: ['category_id']
+            isOneToOne: false
+            referencedRelation: 'categories'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      site_settings: {
+        Row: {
+          about_text: string
+          email: string | null
+          id: string
+          updated_at: string
+          whatsapp_url: string | null
+        }
+        Insert: {
+          about_text?: string
+          email?: string | null
+          id?: string
+          updated_at?: string
+          whatsapp_url?: string | null
+        }
+        Update: {
+          about_text?: string
+          email?: string | null
+          id?: string
+          updated_at?: string
+          whatsapp_url?: string | null
+        }
+        Relationships: []
+      }
+    }
+    Views: { [_ in never]: never }
+    Functions: { [_ in never]: never }
+    Enums: { [_ in never]: never }
+  }
+}
+
+export type Tables<T extends keyof Database['public']['Tables']> =
+  Database['public']['Tables'][T]['Row']
+
+export type TablesInsert<T extends keyof Database['public']['Tables']> =
+  Database['public']['Tables'][T]['Insert']
+
+export type TablesUpdate<T extends keyof Database['public']['Tables']> =
+  Database['public']['Tables'][T]['Update']

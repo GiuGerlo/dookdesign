@@ -13,7 +13,7 @@
 - [X] Entrar a https://supabase.com → New project. Nombre: `dookdesign`. Region: la más cercana (South America / Brazil). Guardar la **DB password**.
 - [X] Project Settings → **API**: copiar `Project URL`, `anon public key`, `service_role key`.
 - [X] Storage → New bucket: `renders`, **Public** (para servir imágenes). Repetir con `thumbnails` si querés versiones chicas.
-- [ ] Más adelante (fase admin): Authentication → Users → Add user → crear usuario de Agustín:
+- [X] Más adelante (fase admin): Authentication → Users → Add user → crear usuario de Agustín:
   - Email: `CODIGO@dookdesign.com` (CODIGO = número de 4 dígitos que elija Agustín, ej. `1234@dookdesign.com`)
   - Password: su contraseña (máx. 16 caracteres)
   - El login del admin muestra "Código" y "Contraseña" — el frontend mapea `código + "@dookdesign.com"` como email para Supabase Auth. Un único usuario, sin tabla custom.
