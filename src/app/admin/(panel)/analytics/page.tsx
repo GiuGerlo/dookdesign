@@ -4,7 +4,13 @@ import { getAnalytics, type AnalyticsRow } from '@/lib/admin/vercel-analytics'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
-const RANGES = [7, 30, 90] as const
+const RANGES = [
+  { days: 1, label: '24 h' },
+  { days: 7, label: '7 días' },
+  { days: 30, label: '30 días' },
+  { days: 90, label: '90 días' },
+] as const
+const VALID_DAYS = RANGES.map(r => r.days) as readonly number[]
 const nf = new Intl.NumberFormat('es-AR')
 
 // Código ISO de país (AR) → emoji bandera (🇦🇷).
@@ -55,7 +61,7 @@ export default async function AnalyticsPage({
   searchParams: Promise<{ days?: string }>
 }) {
   const sp = await searchParams
-  const days = RANGES.includes(Number(sp.days) as (typeof RANGES)[number]) ? Number(sp.days) : 30
+  const days = VALID_DAYS.includes(Number(sp.days)) ? Number(sp.days) : 30
   const data = await getAnalytics(days)
 
   return (
@@ -70,14 +76,14 @@ export default async function AnalyticsPage({
         <div className="flex rounded-md border border-white/[0.08] p-0.5">
           {RANGES.map(r => (
             <Link
-              key={r}
-              href={`/admin/analytics?days=${r}`}
+              key={r.days}
+              href={`/admin/analytics?days=${r.days}`}
               className={cn(
                 'rounded px-3 py-1.5 text-sm font-medium transition-colors',
-                days === r ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+                days === r.days ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
               )}
             >
-              {r} días
+              {r.label}
             </Link>
           ))}
         </div>

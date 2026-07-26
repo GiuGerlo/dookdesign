@@ -58,33 +58,32 @@ async function aggregate(by: string, range: { since: string; until: string }, li
 }
 
 export async function getAnalytics(days: number): Promise<AnalyticsData | null> {
+  // Sin config → null: la UI muestra el aviso de "no configurado".
+  if (!TOKEN || !TEAM || !PROJECT) return null
+
   const until = new Date()
   const since = new Date(Date.now() - days * 86_400_000)
   const range = { since: since.toISOString(), until: until.toISOString() }
 
-  const count = (await callApi('visits/count', range)) as
-    | { data?: { visitors?: number; pageviews?: number } }
-    | null
-  // count null = sin token o API caída → cortamos y la UI avisa.
-  if (!count?.data) return null
-
-  // Over-fetch de páginas para poder filtrar las rutas /admin y quedarnos con top públicas.
-  const [pagesRaw, countries, devices, referrers] = await Promise.all([
+  // Páginas: over-fetch para filtrar rutas /admin. País con límite alto para totales exactos.
+  const [pagesRaw, countriesRaw, devices, referrers] = await Promise.all([
     aggregate('requestPath', range, 20),
-    aggregate('country', range),
+    aggregate('country', range, 100),
     aggregate('deviceType', range),
     aggregate('referrerHostname', range),
   ])
 
+  // Totales por suma del agregado por país: cada visitante tiene un solo país → visitantes únicos
+  // y páginas vistas exactos (incluye el bucket "Others" si lo hubiera). Evita el endpoint count.
+  const totals = countriesRaw.reduce(
+    (t, r) => ({ visitors: t.visitors + r.visitors, pageviews: t.pageviews + r.pageviews }),
+    { visitors: 0, pageviews: 0 }
+  )
+
   const topPages = pagesRaw
     .filter(r => r.value && !r.value.startsWith('/admin') && r.value !== 'Others')
     .slice(0, 8)
+  const countries = countriesRaw.filter(r => r.value && r.value !== 'Others').slice(0, 8)
 
-  return {
-    totals: { visitors: Number(count.data.visitors ?? 0), pageviews: Number(count.data.pageviews ?? 0) },
-    topPages,
-    countries,
-    devices,
-    referrers,
-  }
+  return { totals, topPages, countries, devices, referrers }
 }
