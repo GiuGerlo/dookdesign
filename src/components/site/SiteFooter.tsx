@@ -57,7 +57,7 @@ export function SiteFooter({ settings, mini = false }: SiteFooterProps) {
   const waUrl = buildWhatsappUrl(settings?.whatsapp_url)
   const emailUrl = buildEmailUrl(settings?.email)
   const socials = [
-    { label: 'Instagram', href: settings?.instagram_url },
+    { label: 'dookdesign__', href: settings?.instagram_url },
     { label: 'Behance', href: settings?.behance_url },
   ].filter((s): s is { label: string; href: string } => !!s.href)
 

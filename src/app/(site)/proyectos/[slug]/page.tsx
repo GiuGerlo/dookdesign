@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   // Fallback al OG del sitio si el proyecto no tiene renders.
   const ogImage = project.renders[0]
     ? { url: `/proyectos/${slug}/og`, width: 1200, height: 630, alt: `${project.title} — render` }
-    : { url: '/opengraph.png', width: 1200, height: 630, alt: 'DooK Design' }
+    : { url: '/og-home.png', width: 1200, height: 630, alt: 'DooK Design' }
 
   return {
     title: project.title,
@@ -74,10 +74,16 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
     : null
 
   // Renders → items con índice dentro del lightbox (solo los que tienen imagen).
+  const renderFocus = (project.render_focus as Record<string, number>) ?? {}
   let li = 0
   const renderItems = project.renders.map((path, i) => {
     const url = path ? getPublicRenderUrl(path) : null
-    return { url, alt: `${project.title} — render ${i + 1}`, lightboxIndex: url ? li++ : -1 }
+    return {
+      url,
+      alt: `${project.title} — render ${i + 1}`,
+      lightboxIndex: url ? li++ : -1,
+      focusY: renderFocus[path] ?? 50,
+    }
   })
   const lightboxSlides = renderItems.filter(r => r.url).map(r => ({ src: r.url as string, alt: r.alt }))
 

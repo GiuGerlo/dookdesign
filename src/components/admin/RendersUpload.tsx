@@ -37,19 +37,27 @@ import {
 
 interface RenderThumbProps {
   path: string
+  focus: number
+  onFocus: (path: string, value: number) => void
   onDelete: (path: string) => void
   onOpen: () => void
 }
 
-function RenderThumb({ path, onDelete, onOpen }: RenderThumbProps) {
+// Ratio del preview / hero desktop. Solo hay recorte vertical (ajustable) si la imagen
+// es MÁS ALTA que esto; si es más ancha, entra completa de alto y el slider no aplica.
+const HERO_RATIO = 16 / 9
+
+function RenderThumb({ path, focus, onFocus, onDelete, onOpen }: RenderThumbProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: path })
+  // null = todavía no cargó; true/false = si la imagen tiene recorte vertical ajustable.
+  const [adjustable, setAdjustable] = useState<boolean | null>(null)
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
   }
   return (
-    <div ref={setNodeRef} style={style} className="render-thumb" {...attributes}>
+    <div ref={setNodeRef} style={style} className="render-thumb render-thumb--wide" {...attributes}>
       <div className="render-thumb__handle" {...listeners}>⠿</div>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -57,8 +65,37 @@ function RenderThumb({ path, onDelete, onOpen }: RenderThumbProps) {
         alt=""
         className="render-thumb__img"
         onClick={onOpen}
-        style={{ cursor: 'zoom-in' }}
+        onLoad={e => {
+          const el = e.currentTarget
+          setAdjustable(el.naturalWidth / el.naturalHeight < HERO_RATIO - 0.001)
+        }}
+        style={{ cursor: 'zoom-in', objectPosition: `50% ${focus}%` }}
       />
+      {/* Encuadre vertical del hero: arriba = mostrar parte superior, abajo = inferior. Preview en vivo.
+          Se desactiva si la imagen es más ancha que el hero (no hay recorte vertical que mover). */}
+      <input
+        type="range"
+        min={0}
+        max={100}
+        value={focus}
+        disabled={adjustable === false}
+        onChange={e => onFocus(path, Number(e.target.value))}
+        onClick={e => e.stopPropagation()}
+        onPointerDown={e => e.stopPropagation()}
+        aria-label="Encuadre vertical del hero"
+        title={
+          adjustable === false
+            ? 'Imagen más ancha que el hero: entra completa, sin recorte vertical para ajustar'
+            : 'Encuadre del hero (arriba ↔ abajo)'
+        }
+        className="render-thumb__focus"
+        style={{ writingMode: 'vertical-lr' }}
+      />
+      {adjustable === false && (
+        <span className="render-thumb__badge" title="Imagen panorámica: entra completa de alto, sin recorte vertical">
+          sin recorte vertical
+        </span>
+      )}
       <AlertDialog>
         <AlertDialogTrigger
           render={<button type="button" className="render-thumb__delete" aria-label="Borrar render" />}
@@ -94,9 +131,11 @@ interface RendersUploadProps {
   value: string[]
   onChange: (paths: string[]) => void
   onUploadingChange?: (uploading: boolean) => void
+  focus: Record<string, number>
+  onFocusChange: (map: Record<string, number>) => void
 }
 
-export function RendersUpload({ projectId, value, onChange, onUploadingChange }: RendersUploadProps) {
+export function RendersUpload({ projectId, value, onChange, onUploadingChange, focus, onFocusChange }: RendersUploadProps) {
   const sensors = useSensors(useSensor(PointerSensor))
   const [uploadingCount, setUploadingCount] = useState(0)
   const [lightboxIndex, setLightboxIndex] = useState(-1)
@@ -131,9 +170,19 @@ export function RendersUpload({ projectId, value, onChange, onUploadingChange }:
     try {
       await deleteRender(path)
       onChange(value.filter(p => p !== path))
+      // Podar el encuadre del render borrado (evita claves huérfanas en el mapa).
+      if (path in focus) {
+        const next = { ...focus }
+        delete next[path]
+        onFocusChange(next)
+      }
     } catch {
       sileo.error({ title: 'No se pudo borrar el render' })
     }
+  }
+
+  function handleFocus(path: string, val: number) {
+    onFocusChange({ ...focus, [path]: val })
   }
 
   function handleDragEnd(event: DragEndEvent) {
@@ -167,15 +216,22 @@ export function RendersUpload({ projectId, value, onChange, onUploadingChange }:
       {(value.length > 0 || uploading) && (
         <DndContext id="admin-renders" sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={value} strategy={rectSortingStrategy}>
-            <div className="renders-grid">
+            <div className="renders-grid renders-grid--wide">
               {value.map((path, i) => (
-                <RenderThumb key={path} path={path} onDelete={handleDelete} onOpen={() => setLightboxIndex(i)} />
+                <RenderThumb
+                  key={path}
+                  path={path}
+                  focus={focus[path] ?? 50}
+                  onFocus={handleFocus}
+                  onDelete={handleDelete}
+                  onOpen={() => setLightboxIndex(i)}
+                />
               ))}
               {uploading &&
                 Array.from({ length: uploadingCount }).map((_, i) => (
                   <div
                     key={`skeleton-${i}`}
-                    className="render-thumb flex items-center justify-center animate-pulse"
+                    className="render-thumb render-thumb--wide flex items-center justify-center animate-pulse"
                   >
                     <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                   </div>
@@ -186,7 +242,7 @@ export function RendersUpload({ projectId, value, onChange, onUploadingChange }:
       )}
 
       {value.length > 0 && !uploading && (
-        <p className="renders-hint">El primer render es la portada del proyecto. Clic en una imagen para verla en grande.</p>
+        <p className="renders-hint">El primer render es la portada del proyecto. Cada miniatura tiene el formato del hero (desktop): el deslizador de la derecha ajusta el encuadre vertical (arriba ↔ abajo) y la miniatura muestra en vivo cómo se verá. Las imágenes panorámicas (más anchas que el hero) entran completas y no tienen recorte vertical → el deslizador queda inactivo. Clic en la imagen para verla en grande.</p>
       )}
 
       <Lightbox

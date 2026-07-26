@@ -316,6 +316,9 @@ body {
   background-color: var(--surface);
   aspect-ratio: 1;
 }
+/* Renders del hero: miniatura apaisada (≈ recorte del hero en desktop) para previsualizar el encuadre. */
+.renders-grid--wide { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.render-thumb--wide { aspect-ratio: 16 / 9; }
 .render-thumb__img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .render-thumb__handle {
   position: absolute;
@@ -346,6 +349,33 @@ body {
   align-items: center;
   justify-content: center;
 }
+.render-thumb__focus {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 62%;
+  width: 18px;
+  cursor: ns-resize;
+  accent-color: var(--accent);
+  opacity: 0.55;
+  transition: opacity 150ms;
+}
+.render-thumb:hover .render-thumb__focus { opacity: 1; }
+.render-thumb__focus:disabled { opacity: 0.25; cursor: not-allowed; }
+.render-thumb__badge {
+  position: absolute;
+  left: 4px;
+  bottom: 4px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+
 .renders-hint { font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px; }
 
 /* ── Category list ── */
@@ -568,6 +598,13 @@ body {
    (si no, el navegador reescala el webp de 3840px con filtro rápido y se ve borroso/aliased).
    La aplica RenderImage siempre (grid del home, cards de /proyectos y galería del detalle). */
 .render-crisp { transform: translateZ(0); will-change: transform; backface-visibility: hidden; }
+
+/* Hero del detalle: mobile muestra la imagen completa (contain, centrada); desktop recorta
+   (cover) con el encuadre vertical elegido por render (--hero-focus, default 50%). */
+.hero-img { object-fit: contain; }
+@media (min-width: 768px) {
+  .hero-img { object-fit: cover; object-position: 50% var(--hero-focus, 50%); }
+}
 
 /* Cards de proyecto: B&N → color + zoom solo con hover real; touch siempre color */
 .project-card .card-render { transition: filter 400ms ease, transform 500ms ease, opacity 400ms ease; }

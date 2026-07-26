@@ -12,6 +12,7 @@ export interface HeroSlide {
   url: string | null
   alt: string
   lightboxIndex: number
+  focusY: number
 }
 
 interface ProjectHeroProps {
@@ -86,7 +87,8 @@ export function ProjectHero({ slides, title, year, categoryName }: ProjectHeroPr
                   sizes="100vw"
                   priority={i === 0}
                   unoptimized
-                  className="object-contain md:object-cover"
+                  className="hero-img"
+                  style={{ '--hero-focus': `${s.focusY}%` } as React.CSSProperties}
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center bg-[repeating-linear-gradient(135deg,#2A2A2F,#2A2A2F_14px,#323238_14px,#323238_28px)]">

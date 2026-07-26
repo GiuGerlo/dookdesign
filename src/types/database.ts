@@ -26,6 +26,7 @@ export type Database = {
           materials: string[]
           order: number
           published: boolean
+          render_focus: Json
           renders: string[]
           slug: string
           title: string
@@ -42,6 +43,7 @@ export type Database = {
           materials?: string[]
           order?: number
           published?: boolean
+          render_focus?: Json
           renders?: string[]
           slug: string
           title: string
@@ -58,6 +60,7 @@ export type Database = {
           materials?: string[]
           order?: number
           published?: boolean
+          render_focus?: Json
           renders?: string[]
           slug?: string
           title?: string

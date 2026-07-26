@@ -60,6 +60,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
           published: project.published,
           renders: project.renders,
           environment_renders: project.environment_renders,
+          render_focus: (project.render_focus as Record<string, number>) ?? {},
         }
       : {
           title: '',
@@ -72,6 +73,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
           published: true,
           renders: [],
           environment_renders: [],
+          render_focus: {},
         },
   })
 
@@ -255,6 +257,8 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
                 value={field.value}
                 onChange={field.onChange}
                 onUploadingChange={setIsUploading}
+                focus={watch('render_focus')}
+                onFocusChange={m => setValue('render_focus', m, { shouldDirty: true })}
               />
             )}
           />

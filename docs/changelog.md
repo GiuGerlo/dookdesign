@@ -15,6 +15,18 @@ Historial por fase. Formato en `.claude/rules/docs-workflow.md`.
 **Migración**: nada / pasos.
 -->
 
+## [2026-07-26] hero — Encuadre ajustable por imagen
+
+**Resumen**: El hero del detalle recortaba las imágenes centradas (object-cover) y "comía" partes del render (ej. la plataforma de DX8). Ahora cada render del carrusel guarda su propio encuadre vertical, ajustable desde el admin.
+
+**Cambios**:
+- **DB**: `projects.render_focus` (jsonb, mapa `{ "<path>": 0-100 }` = % de `object-position` Y, keyed por path del render). Migración `0013`.
+- **Admin**: slider vertical en cada thumb de renders (`RendersUpload`) con preview en vivo (la miniatura muestra el recorte al mover). Se poda la clave al borrar el render.
+- **Sitio**: `ProjectHero` aplica el encuadre vía clase `.hero-img` + var CSS `--hero-focus`. Solo en desktop (cover); mobile sigue mostrando la imagen completa (contain).
+
+**Breaking**: nada.
+**Migración**: `0013_render_focus.sql` (aplicada).
+
 ## [2026-07-26] seo — Correcciones post-audit + OG de producto 1200×630
 
 **Resumen**: Tras el audit sobre el sitio live: H1 en la home y OG de producto en formato grande (1200×630) para el preview de redes.

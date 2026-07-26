@@ -11,6 +11,8 @@ export const projectSchema = z.object({
   published: z.boolean(),
   renders: z.array(z.string()),
   environment_renders: z.array(z.string()).max(3, 'Máximo 3'),
+  // Encuadre vertical del hero por render: { "<path>": 0-100 } (% de object-position Y).
+  render_focus: z.record(z.string(), z.number().min(0).max(100)),
 })
 
 export type ProjectFormData = z.infer<typeof projectSchema>

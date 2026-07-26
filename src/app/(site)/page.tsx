@@ -67,7 +67,7 @@ export default async function Home() {
         name: AUTHOR,
         jobTitle: 'Diseñador industrial',
         url: siteUrl,
-        image: heroUrl ?? `${siteUrl}/opengraph.png`,
+        image: heroUrl ?? `${siteUrl}/og-home.png`,
         address: {
           '@type': 'PostalAddress',
           addressLocality: 'Rosario',

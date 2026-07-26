@@ -13,7 +13,7 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params
-  const fallback = () => Response.redirect(`${siteUrl}/opengraph.png`, 302)
+  const fallback = () => Response.redirect(`${siteUrl}/og-home.png`, 302)
 
   try {
     const project = await getProjectBySlug(slug)
