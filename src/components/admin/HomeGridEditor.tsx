@@ -36,15 +36,15 @@ const SIZES: { value: HomeGridSize; label: string }[] = [
 ]
 
 // Geometría por breakpoint — DEBE coincidir con .home-grid en globals.css para que sea WYSIWYG.
-const BP: Record<GridBreakpoint, { cols: number; rowH: number; gap: number; maxW?: number }> = {
+export const BP: Record<GridBreakpoint, { cols: number; rowH: number; gap: number; maxW?: number }> = {
   desktop: { cols: gridCols.desktop, rowH: 130, gap: 16 },
   mobile: { cols: gridCols.mobile, rowH: 90, gap: 12, maxW: 420 },
 }
-const MAX_ROW = 30
+export const MAX_ROW = 30
 
-const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n))
+export const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n))
 
-function GridTile({
+export function GridTile({
   item,
   project,
   bp,
@@ -59,7 +59,7 @@ function GridTile({
   onSize: (size: HomeGridSize) => void
   onFocus: (value: number) => void
   onFocusX: (value: number) => void
-  onRemove: () => void
+  onRemove?: () => void
 }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: item.project_id,
@@ -177,14 +177,16 @@ function GridTile({
               {adjustableY === false ? 'sin recorte ↕' : 'sin recorte ↔'}
             </span>
           )}
-          <button
-            type="button"
-            onClick={onRemove}
-            className="rounded p-0.5 text-white/70 hover:text-destructive"
-            aria-label="Quitar de la grilla"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          {onRemove && (
+            <button
+              type="button"
+              onClick={onRemove}
+              className="rounded p-0.5 text-white/70 hover:text-destructive"
+              aria-label="Quitar de la grilla"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
         <div className="space-y-1.5">

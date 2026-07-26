@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { homeGridSchema } from './schemas'
+import { homeGridSchema, projectsGridSchema } from './schemas'
 import type { ProjectFormData, CategoryFormData, SiteSettingsFormData, HeroSettingsFormData, HomeGridItem } from './schemas'
 
 // --- Proyectos ---
@@ -92,4 +92,17 @@ export async function updateHomeGrid(items: HomeGridItem[]) {
   const { error } = await supabase.from('site_settings').update({ home_grid: parsed }).eq('id', existing.id)
   if (error) throw new Error(error.message)
   revalidatePath('/')
+}
+
+export async function updateProjectsPage(intro: string, grid: HomeGridItem[]) {
+  const parsed = projectsGridSchema.parse(grid)
+  const supabase = await createClient()
+  const { data: existing } = await supabase.from('site_settings').select('id').single()
+  if (!existing) throw new Error('No existe fila de site_settings')
+  const { error } = await supabase
+    .from('site_settings')
+    .update({ projects_intro: intro || null, projects_grid: parsed })
+    .eq('id', existing.id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/proyectos')
 }

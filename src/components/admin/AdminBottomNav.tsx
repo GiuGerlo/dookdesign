@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Home, Layers, Tag, Settings, BarChart3, LogOut } from 'lucide-react'
+import { Home, Layers, LayoutGrid, Tag, Settings, BarChart3, LogOut } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 
 const links = [
   { href: '/admin/inicio', label: 'Inicio', icon: Home },
   { href: '/admin/proyectos', label: 'Proyectos', icon: Layers },
+  { href: '/admin/proyectos-pagina', label: 'Página', icon: LayoutGrid },
   { href: '/admin/categorias', label: 'Categ.', icon: Tag },
   { href: '/admin/analytics', label: 'Stats', icon: BarChart3 },
   { href: '/admin/configuracion', label: 'Config.', icon: Settings },
@@ -27,7 +28,7 @@ export function AdminBottomNav() {
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-white/[0.08] flex">
       {links.map(({ href, label, icon: Icon }) => {
-        const active = pathname.startsWith(href)
+        const active = pathname === href || pathname.startsWith(href + '/')
         return (
           <Link
             key={href}

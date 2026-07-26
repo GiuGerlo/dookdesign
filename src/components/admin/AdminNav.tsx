@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
-import { Home, Layers, Tag, Settings, BarChart3, LogOut } from 'lucide-react'
+import { Home, Layers, LayoutGrid, Tag, Settings, BarChart3, LogOut } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 const links = [
   { href: '/admin/inicio', label: 'Inicio', icon: Home },
   { href: '/admin/proyectos', label: 'Proyectos', icon: Layers },
+  { href: '/admin/proyectos-pagina', label: 'Página proyectos', icon: LayoutGrid },
   { href: '/admin/categorias', label: 'Categorías', icon: Tag },
   { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/admin/configuracion', label: 'Configuración', icon: Settings },
@@ -44,7 +45,7 @@ export function AdminNav() {
 
       <nav className="flex flex-col gap-0.5 p-3 flex-1">
         {links.map(({ href, label, icon: Icon }) => {
-          const active = pathname.startsWith(href)
+          const active = pathname === href || pathname.startsWith(href + '/')
           return (
             <Link
               key={href}

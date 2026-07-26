@@ -96,6 +96,8 @@ export type Database = {
           id: string
           instagram_url: string | null
           location: string | null
+          projects_grid: Json
+          projects_intro: string | null
           updated_at: string
           whatsapp_url: string | null
         }
@@ -111,6 +113,8 @@ export type Database = {
           id?: string
           instagram_url?: string | null
           location?: string | null
+          projects_grid?: Json
+          projects_intro?: string | null
           updated_at?: string
           whatsapp_url?: string | null
         }
@@ -126,6 +130,8 @@ export type Database = {
           id?: string
           instagram_url?: string | null
           location?: string | null
+          projects_grid?: Json
+          projects_intro?: string | null
           updated_at?: string
           whatsapp_url?: string | null
         }

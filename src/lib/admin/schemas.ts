@@ -76,23 +76,25 @@ const gridPosSchema = z.object({
   row: z.number().int().min(1),
 })
 
-// Grilla curada del home: qué proyecto, con qué tamaño (span), encuadre y posición por breakpoint.
-export const homeGridSchema = z
-  .array(
-    z.object({
-      project_id: z.string().uuid(),
-      size: z.enum(['sm', 'wide', 'tall', 'big']),
-      // Encuadre (object-position, 0-100). Opcional: default 50 = centro. Compartido entre breakpoints.
-      focus: z.number().min(0).max(100).optional(),
-      focus_x: z.number().min(0).max(100).optional(),
-      // Posición libre por breakpoint (desktop 4 col / móvil 2 col). Ausente = auto-flow.
-      desktop: gridPosSchema.optional(),
-      mobile: gridPosSchema.optional(),
-    })
-  )
-  .max(12)
+// Celda de una grilla curada: qué proyecto, con qué tamaño (span), encuadre y posición por breakpoint.
+export const gridItemSchema = z.object({
+  project_id: z.string().uuid(),
+  size: z.enum(['sm', 'wide', 'tall', 'big']),
+  // Encuadre (object-position, 0-100). Opcional: default 50 = centro. Compartido entre breakpoints.
+  focus: z.number().min(0).max(100).optional(),
+  focus_x: z.number().min(0).max(100).optional(),
+  // Posición libre por breakpoint (desktop 4 col / móvil 2 col). Ausente = auto-flow.
+  desktop: gridPosSchema.optional(),
+  mobile: gridPosSchema.optional(),
+})
 
-export type HomeGridItem = z.infer<typeof homeGridSchema>[number]
+// Grilla curada del home: hasta 12 proyectos elegidos a mano.
+export const homeGridSchema = z.array(gridItemSchema).max(12)
+
+// Grilla de la página /proyectos: todos los publicados, sin tope.
+export const projectsGridSchema = z.array(gridItemSchema)
+
+export type HomeGridItem = z.infer<typeof gridItemSchema>
 export type HomeGridSize = HomeGridItem['size']
 export type GridPos = z.infer<typeof gridPosSchema>
 export type GridBreakpoint = 'desktop' | 'mobile'
