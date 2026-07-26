@@ -15,6 +15,22 @@ Historial por fase. Formato en `.claude/rules/docs-workflow.md`.
 **Migración**: nada / pasos.
 -->
 
+## [2026-07-26] seo — SEO integral + OpenGraph + Analytics + fix email
+
+**Resumen**: Portfolio comercial → SEO técnico/on-page completo, OpenGraph dinámico por proyecto, datos estructurados, AEO (llms.txt), Vercel Analytics, y arreglo del botón de email.
+
+**Cambios**:
+- **Email**: `buildMailto` → `buildEmailUrl` (Gmail web compose, abre en pestaña nueva). El `mailto:` no abría nada sin cliente de correo en el SO. Actualizado en detalle y footer.
+- **Metadata raíz** (`layout.tsx`): `metadataBase`, título con template, keywords, `openGraph` (usa `public/opengraph.png`), `twitter` (`summary_large_image`), `robots`, canonical. Helper `src/lib/site/seo.ts` (`siteUrl` desde `NEXT_PUBLIC_SITE_URL`, default `dookdesign.com`).
+- **OpenGraph dinámico por proyecto**: `generateMetadata` de `[slug]` usa el **primer render del producto** como `og:image` + canonical + `twitter`. Al compartir `/proyectos/dx8` se ve la imagen principal.
+- **Datos estructurados (JSON-LD)**: componente `JsonLd`. Home = `WebSite` + `Person` (Agustín, Rosario, sameAs Instagram). Detalle = `CreativeWork` (imágenes, creator, año, categoría) + `BreadcrumbList`.
+- **Sitemap/Robots**: `app/sitemap.ts` (dinámico: home, /proyectos, cada proyecto publicado) y `app/robots.ts` (bloquea `/admin`, apunta al sitemap).
+- **AEO**: `app/llms.txt/route.ts` — resumen del sitio + proyectos publicados en texto plano, generado desde la DB.
+- **Vercel Analytics**: `@vercel/analytics` + `<Analytics/>` en el layout. CSP sin cambios (beacon mismo origen).
+
+**Breaking**: nada.
+**Migración**: nada. **Env nueva**: `NEXT_PUBLIC_SITE_URL` en Vercel (default `https://dookdesign.com`).
+
 ## [2026-07-26] ajustes — Renders de entorno + fixes visuales
 
 **Resumen**: Feedback post-deploy con Agustín: nuevo tipo de imagen "renders de entorno", tagline del logo y legibilidad del azul de marca en modo oscuro.

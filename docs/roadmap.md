@@ -106,3 +106,18 @@ El panel admin está funcional y en producción. Rutas bajo `/admin/`:
 - **Azul en dark**: token `--brand-ink` (aclarado a `#9C99F8` en dark) para legibilidad AA sin romper los pills.
 
 **Pendiente**: QA manual del usuario + commit. Ajustar `--brand-ink` si no llega a AA. Correr `/security-review`.
+
+## SEO + Analytics (2026-07-26)
+
+**DONE**:
+- **SEO técnico/on-page**: metadata raíz completa (`metadataBase`, OG, Twitter, robots, keywords, canonical), helper `src/lib/site/seo.ts`.
+- **OpenGraph dinámico por proyecto**: `og:image` = primer render del producto.
+- **JSON-LD**: `WebSite`+`Person` (home), `CreativeWork`+`BreadcrumbList` (detalle).
+- **Sitemap/Robots/llms.txt**: rutas dinámicas (`app/sitemap.ts`, `app/robots.ts`, `app/llms.txt/route.ts`).
+- **Vercel Analytics**: `<Analytics/>` en el layout.
+- **Fix email**: Gmail web compose en vez de `mailto:`.
+
+**Pendiente operativo**:
+- Setear `NEXT_PUBLIC_SITE_URL` en Vercel (el dominio real; default `dookdesign.com`).
+- Verificar OG real compartiendo un link tras deploy (WhatsApp / debugger).
+- Favicon cuadrado 32×32 (asset pendiente de siempre).

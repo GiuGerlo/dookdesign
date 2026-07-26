@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { MessageCircle, Mail } from 'lucide-react'
 import { getProjectBySlug, getPublishedProjects, getCategories, getSiteSettings } from '@/lib/projects/queries'
 import { getPublicRenderUrl } from '@/lib/site/images'
-import { buildWhatsappUrl, buildMailto } from '@/lib/site/contact'
+import { buildWhatsappUrl, buildEmailUrl } from '@/lib/site/contact'
 import { SiteNav } from '@/components/site/SiteNav'
 import { SiteFooter } from '@/components/site/SiteFooter'
 import { Reveal } from '@/components/site/Reveal'
@@ -12,15 +12,41 @@ import { ProjectEnvironmentRow } from '@/components/site/ProjectEnvironmentRow'
 import { ProjectGallery } from '@/components/site/ProjectGallery'
 import { LightboxProvider } from '@/components/site/ProjectLightbox'
 import { RelatedProjects, type RelatedProject } from '@/components/site/RelatedProjects'
+import { JsonLd } from '@/components/site/JsonLd'
+import { siteUrl, AUTHOR } from '@/lib/site/seo'
 import type { Tables } from '@/types/database'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const project = await getProjectBySlug(slug)
-  if (!project) return { title: 'Proyecto no encontrado — DooK Design' }
+  if (!project) return { title: 'Proyecto no encontrado' }
+
+  const description =
+    project.description?.slice(0, 155) || `${project.title}, diseño industrial de Agustín Cavallera.`
+  const canonical = `/proyectos/${slug}`
+  // OG = imagen principal del producto (render ya público en el CDN); fallback al OG del sitio.
+  const cover = project.renders[0] ? getPublicRenderUrl(project.renders[0]) : null
+  const ogImage = cover
+    ? { url: cover, width: 1200, height: 900, alt: `${project.title} — render` }
+    : { url: '/opengraph.png', width: 1200, height: 630, alt: 'DooK Design' }
+
   return {
-    title: `${project.title} — DooK Design`,
-    description: project.description?.slice(0, 155) || `${project.title}, diseño industrial de Agustín Cavallera.`,
+    title: project.title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      type: 'article',
+      url: canonical,
+      title: `${project.title} — DooK Design`,
+      description,
+      images: [ogImage],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${project.title} — DooK Design`,
+      description,
+      images: [ogImage.url],
+    },
   }
 }
 
@@ -73,10 +99,37 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
   }))
 
   const waUrl = buildWhatsappUrl(settings?.whatsapp_url, project.title)
-  const mailto = buildMailto(settings?.email, project.title)
+  const emailUrl = buildEmailUrl(settings?.email, project.title)
+
+  const projectUrl = `${siteUrl}/proyectos/${project.slug}`
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'CreativeWork',
+        '@id': `${projectUrl}#work`,
+        name: project.title,
+        url: projectUrl,
+        ...(project.description ? { description: project.description } : {}),
+        ...(lightboxSlides.length > 0 ? { image: lightboxSlides.map(s => s.src) } : {}),
+        dateCreated: String(project.year),
+        ...(categoryName ? { genre: categoryName } : {}),
+        creator: { '@type': 'Person', name: AUTHOR, url: siteUrl },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Inicio', item: siteUrl },
+          { '@type': 'ListItem', position: 2, name: 'Proyectos', item: `${siteUrl}/proyectos` },
+          { '@type': 'ListItem', position: 3, name: project.title, item: projectUrl },
+        ],
+      },
+    ],
+  }
 
   return (
     <>
+      <JsonLd data={jsonLd} />
       <SiteNav overHero scrolledLabel={project.title} />
       <LightboxProvider slides={lightboxSlides}>
         <main>
@@ -124,7 +177,7 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
           {lightboxSlides.length > 0 && <ProjectGallery images={renderItems} />}
 
           {/* CTA */}
-          {(waUrl || mailto) && (
+          {(waUrl || emailUrl) && (
             <Reveal className="mx-auto max-w-[1600px] px-5 pb-14 md:px-16 md:pb-16">
               <div className="flex flex-wrap items-end justify-between gap-8 border-t border-(--site-border) pt-14 md:pt-16">
                 <div className="max-w-[640px]">
@@ -140,8 +193,8 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
                       WhatsApp
                     </a>
                   )}
-                  {mailto && (
-                    <a href={mailto} className="btn-invert inline-flex items-center gap-2.5 rounded-full px-7 py-3.5 text-sm font-semibold">
+                  {emailUrl && (
+                    <a href={emailUrl} target="_blank" rel="noopener noreferrer" className="btn-invert inline-flex items-center gap-2.5 rounded-full px-7 py-3.5 text-sm font-semibold">
                       <Mail className="h-[18px] w-[18px]" aria-hidden />
                       Email
                     </a>

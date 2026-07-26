@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { MessageCircle, Mail, AtSign, MapPin, ExternalLink, type LucideIcon } from 'lucide-react'
-import { buildWhatsappUrl, buildMailto } from '@/lib/site/contact'
+import { buildWhatsappUrl, buildEmailUrl } from '@/lib/site/contact'
 import type { Tables } from '@/types/database'
 
 const socialIcon: Record<string, LucideIcon> = { Instagram: AtSign, Behance: ExternalLink }
@@ -33,7 +33,7 @@ function DevCredit() {
 // Footer del sitio. `mini`: solo la barra final (página de detalle).
 export function SiteFooter({ settings, mini = false }: SiteFooterProps) {
   const waUrl = buildWhatsappUrl(settings?.whatsapp_url)
-  const mailto = buildMailto(settings?.email)
+  const emailUrl = buildEmailUrl(settings?.email)
   const socials = [
     { label: 'Instagram', href: settings?.instagram_url },
     { label: 'Behance', href: settings?.behance_url },
@@ -86,8 +86,8 @@ export function SiteFooter({ settings, mini = false }: SiteFooterProps) {
                 WhatsApp
               </a>
             )}
-            {mailto && settings?.email && (
-              <a href={mailto} className="flex items-center gap-2.5 text-[15px] font-medium hover:text-(--brand-ink)">
+            {emailUrl && settings?.email && (
+              <a href={emailUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-[15px] font-medium hover:text-(--brand-ink)">
                 <Mail className="h-[18px] w-[18px] text-(--text-secondary)" aria-hidden />
                 {settings.email}
               </a>

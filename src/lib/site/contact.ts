@@ -22,10 +22,13 @@ export function buildWhatsappUrl(rawWhatsapp: string | null | undefined, title?:
 }
 
 /**
- * Construye un `mailto:` con asunto pre-cargado. Devuelve `null` si no hay email.
+ * Construye un link de redacción de Gmail (web) con destinatario y asunto pre-cargados.
+ * Se usa en vez de `mailto:` porque `mailto:` no abre nada si el SO no tiene cliente de
+ * correo configurado (típico en Windows). Abrir en pestaña nueva. `null` si no hay email.
  */
-export function buildMailto(email: string | null | undefined, title?: string): string | null {
+export function buildEmailUrl(email: string | null | undefined, title?: string): string | null {
   if (!email) return null
-  const subject = encodeURIComponent(title ? `Consulta: ${title}` : 'Consulta desde la web')
-  return `mailto:${email}?subject=${subject}`
+  const subject = title ? `Consulta: ${title}` : 'Consulta desde la web'
+  const params = new URLSearchParams({ view: 'cm', fs: '1', to: email, su: subject })
+  return `https://mail.google.com/mail/?${params.toString()}`
 }

@@ -6,6 +6,8 @@ import { HomeHero } from '@/components/site/HomeHero'
 import { HomeGallery, type GalleryItem } from '@/components/site/HomeGallery'
 import { SiteFooter } from '@/components/site/SiteFooter'
 import { Reveal } from '@/components/site/Reveal'
+import { JsonLd } from '@/components/site/JsonLd'
+import { siteUrl, SITE_NAME, AUTHOR, INSTAGRAM_URL, SITE_DESCRIPTION } from '@/lib/site/seo'
 
 export default async function Home() {
   const [projects, settings] = await Promise.all([
@@ -48,8 +50,39 @@ export default async function Home() {
     }))
   }
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        '@id': `${siteUrl}/#website`,
+        url: siteUrl,
+        name: SITE_NAME,
+        description: SITE_DESCRIPTION,
+        inLanguage: 'es-AR',
+      },
+      {
+        '@type': 'Person',
+        '@id': `${siteUrl}/#agustin`,
+        name: AUTHOR,
+        jobTitle: 'Diseñador industrial',
+        url: siteUrl,
+        image: heroUrl ?? `${siteUrl}/opengraph.png`,
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: 'Rosario',
+          addressRegion: 'Santa Fe',
+          addressCountry: 'AR',
+        },
+        sameAs: [INSTAGRAM_URL],
+        worksFor: { '@id': `${siteUrl}/#website` },
+      },
+    ],
+  }
+
   return (
     <>
+      <JsonLd data={jsonLd} />
       <SiteNav overHero />
       <main>
         <HomeHero imageUrl={heroUrl} />

@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import { DM_Sans, Geist } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import { cn } from "@/lib/utils";
+import { siteUrl, SITE_NAME, AUTHOR, LOCALE, SITE_DESCRIPTION } from '@/lib/site/seo'
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -13,8 +15,47 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'DooK Design',
-  description: 'Portfolio de Agustín Cavallera — Diseñador Industrial',
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: `${SITE_NAME} — Diseño industrial de ${AUTHOR}`,
+    template: `%s — ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  authors: [{ name: AUTHOR }],
+  creator: AUTHOR,
+  keywords: [
+    'diseño industrial',
+    'diseñador industrial',
+    'mobiliario',
+    'diseño de producto',
+    'renders 3D',
+    'Agustín Cavallera',
+    'DooK Design',
+    'Rosario',
+    'Argentina',
+  ],
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
+    locale: LOCALE,
+    url: siteUrl,
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — Diseño industrial de ${AUTHOR}`,
+    description: SITE_DESCRIPTION,
+    images: [{ url: '/opengraph.png', width: 1200, height: 630, alt: SITE_NAME }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${SITE_NAME} — Diseño industrial de ${AUTHOR}`,
+    description: SITE_DESCRIPTION,
+    images: ['/opengraph.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
+  },
 }
 
 export default function RootLayout({
@@ -35,6 +76,7 @@ export default function RootLayout({
       {/* suppressHydrationWarning: extensiones del navegador (ej. ColorZilla) inyectan attrs en el body */}
       <body className={dmSans.variable} suppressHydrationWarning>
         {children}
+        <Analytics />
       </body>
     </html>
   )
