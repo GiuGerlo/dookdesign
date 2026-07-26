@@ -18,6 +18,7 @@ Esquema de fases: **números 1–N**.
 | 4 | Admin con login (Supabase Auth) — CRUD + upload de renders | DONE | 3 | 2026-07-23 |
 | 4.5 | Admin redesign (shadcn/ui, bugs, sileo, logos) | DONE | 4 | 2026-07-23 |
 | 5 | Galería pública + página de proyecto con animaciones | DONE | 2, 4 | 2026-07-25 |
+| 6 | Post-launch: portada video, /proyectos editable, keep-alive + observabilidad + hardening | DONE | 5 | 2026-07-26 |
 
 > Ajustá las fases a medida que se concreten. Cada fase: spec → plan → tasks → cierre
 > (ver `.claude/rules/docs-workflow.md`).
@@ -121,3 +122,20 @@ El panel admin está funcional y en producción. Rutas bajo `/admin/`:
 - Setear `NEXT_PUBLIC_SITE_URL` en Vercel (el dominio real; default `dookdesign.com`).
 - Verificar OG real compartiendo un link tras deploy (WhatsApp / debugger).
 - Favicon cuadrado 32×32 (asset pendiente de siempre).
+
+## Fase 6 — Post-launch hardening (2026-07-26)
+
+**DONE**. Ver `docs/changelog.md` (entradas portada-inicio, proyectos-pagina, fase-6):
+- **Portada del home** con imagen o video, gestionada en `/admin/inicio`; preview espeja el viewport; login seguro (redirige a inicio).
+- **Página `/proyectos`** editable (grilla libre + intro) desde `/admin/proyectos-pagina`.
+- **Keep-alive** de Supabase (cron diario) para que el free tier no pause el proyecto.
+- **Speed Insights** activo (además de Analytics).
+- **OG de producto** arreglado con proxy weserv; `sharp` eliminado del repo.
+- **Dependabot** + script `pnpm typecheck`.
+
+**Pendiente operativo**:
+- Setear `CRON_SECRET` en Vercel (Production) para el cron de keep-alive.
+- `pnpm lint` pospuesto (conflicto `eslint-config-next` 16 / `unrs-resolver` / pnpm 11); retomar si se quiere linting en CI.
+- Backups periódicos de la DB si el contenido se vuelve crítico (free tier con backups limitados).
+
+**Recomendaciones futuras (no urgentes)**: transforms de imágenes si el material crece · rate-limit en login (Vercel Firewall/BotID) · error monitoring (Sentry) opcional.

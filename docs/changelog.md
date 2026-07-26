@@ -15,6 +15,47 @@ Historial por fase. Formato en `.claude/rules/docs-workflow.md`.
 **Migración**: nada / pasos.
 -->
 
+## [2026-07-26] fase-6 — Post-launch: keep-alive, observabilidad y hardening
+
+**Resumen**: Cron diario que mantiene despierto Supabase (evita la pausa por inactividad del free tier), Speed Insights, y fix del OG de producto migrando de sharp a un proxy weserv.
+
+**Cambios**:
+- **Keep-alive**: ruta `src/app/api/keep-alive/route.ts` (query trivial a `site_settings`, opcional `CRON_SECRET`) + `vercel.json` con cron diario `0 6 * * *`. Cualquier request resetea el timer de pausa de 7 días.
+- **Speed Insights**: `@vercel/speed-insights` + `<SpeedInsights/>` en `layout.tsx` (junto a Analytics). CSP no requiere cambios (mismo origen `/_vercel`).
+- **OG de producto (fix)**: helper `getOgImageUrl` en `lib/site/images.ts` que recorta el render a 1200×630 vía `images.weserv.nl`. Se borró la ruta `/proyectos/[slug]/og` (sharp) y **se eliminó `sharp`** de deps + su workaround de libvips en `next.config.ts`.
+- **Dependabot**: `.github/dependabot.yml` (npm semanal, PRs agrupados minor/patch).
+- **Scripts**: `pnpm typecheck` (`tsc --noEmit`). Lint pospuesto: `eslint-config-next` 16 arrastra un resolver nativo (`unrs-resolver`) que choca con pnpm 11.
+
+**Breaking**: nada.
+**Migración**: nada. **Operativo**: setear `CRON_SECRET` en Vercel (Production) para proteger el endpoint del cron.
+
+## [2026-07-26] proyectos-pagina — Página /proyectos editable desde admin
+
+**Resumen**: La página pública `/proyectos` pasa a grilla libre curable (orden, tamaño y encuadre X/Y por proyecto y breakpoint) más texto de intro editable, gestionada en la nueva sección `/admin/proyectos-pagina`. Se quitaron filtros y "Ver más".
+
+**Cambios**:
+- **DB**: `site_settings.projects_intro` (text) + `projects_grid` (jsonb). Migración `0018_projects_page.sql` (aplicada).
+- **Schemas**: `gridItemSchema` extraído; `homeGridSchema` (cap 12) y `projectsGridSchema` (sin tope) derivan de él.
+- **Admin**: `ProjectsPageEditor` reutiliza `GridTile` del home (drag/tamaño/encuadre/Desktop-Móvil), auto-incluye todos los publicados. Nueva ruta + links en nav (fix de active-link por colisión de prefijo).
+- **Público**: `ProjectsFreeGrid` reusa `.home-grid` + `gridItemVars`. `ProjectsGrid.tsx` borrado.
+
+**Breaking**: se pierden los filtros categoría/año y el "Ver más" en `/proyectos`.
+**Migración**: `0018` (aplicada).
+
+## [2026-07-26] portada-inicio — Portada del home con imagen o video, movida a /admin/inicio
+
+**Resumen**: La portada del home se gestiona ahora en `/admin/inicio` (no en Configuración), acepta imagen **o** video, y el preview espeja el recorte real del dispositivo. Login redirige a `/admin/inicio` y bloquea el acceso si ya hay sesión.
+
+**Cambios**:
+- **DB**: `site_settings.hero_video` (text). Migración `0017_hero_video.sql` (aplicada).
+- **Admin**: `HeroSettingsForm` (imagen/video + sliders X/Y + preview con `aspectRatio` = viewport) en `/admin/inicio`; sacada de `SiteSettingsForm`. `uploadVideo` en storage (crudo, aviso de peso).
+- **Público**: `HomeHero` renderiza `<video autoplay loop muted>` si hay `hero_video`, si no la imagen.
+- **Seguridad/login**: `proxy.ts` redirige a `/admin/inicio` si un logueado abre `/admin/login`; login apunta a inicio.
+- **Fixes UI**: layout de "Editar proyecto" a masonry (sin huecos blancos); placeholder gris `onError` en renders/renders de entorno (evita cajas negras por refs huérfanas).
+
+**Breaking**: la portada ya no se edita en `/admin/configuracion`.
+**Migración**: `0017` (aplicada). Limpieza puntual de `environment_renders` huérfanos del proyecto `ef83de82`.
+
 ## [2026-07-26] admin-analytics — Dashboard de analytics en /admin
 
 **Resumen**: Nueva página `/admin/analytics` que consume la Web Analytics API de Vercel del lado server, para que el cliente vea el tráfico con su login de admin existente (sin darle acceso a Vercel).

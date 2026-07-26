@@ -27,16 +27,6 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
-  // sharp se usa en la route OG (server). No bundlearla — se resuelve como binario nativo.
-  serverExternalPackages: ['sharp'],
-  // El file-tracing de Next no arrastra el binario nativo de libvips (dep de sharp) a la lambda
-  // → en Vercel (linux) sharp fallaba con "libvips-cpp.so ... No such file". Forzamos su inclusión.
-  outputFileTracingIncludes: {
-    '/proyectos/[slug]/og': [
-      './node_modules/.pnpm/@img+sharp-linux-x64@*/**',
-      './node_modules/.pnpm/@img+sharp-libvips-linux-x64@*/**',
-    ],
-  },
   images: {
     remotePatterns: [
       {

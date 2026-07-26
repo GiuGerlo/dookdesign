@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { DM_Sans, Geist } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 import { cn } from "@/lib/utils";
 import { siteUrl, SITE_NAME, AUTHOR, LOCALE, SITE_DESCRIPTION } from '@/lib/site/seo'
@@ -77,6 +78,7 @@ export default function RootLayout({
       <body className={dmSans.variable} suppressHydrationWarning>
         {children}
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
