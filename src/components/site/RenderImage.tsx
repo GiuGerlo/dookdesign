@@ -29,7 +29,7 @@ export function RenderImage({ src, alt, sizes, priority = false, className = '' 
         // calidad. La nitidez en reposo la garantiza la capa GPU forzada en .card-render (globals.css).
         unoptimized
         onLoad={() => setLoaded(true)}
-        className={`object-cover transition-opacity duration-400 ${loaded ? 'opacity-100' : 'opacity-0'} ${className}`}
+        className={`render-crisp object-cover transition-opacity duration-400 ${loaded ? 'opacity-100' : 'opacity-0'} ${className}`}
       />
     </>
   )

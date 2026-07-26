@@ -9,10 +9,16 @@
  */
 export function buildWhatsappUrl(rawWhatsapp: string | null | undefined, title?: string): string | null {
   if (!rawWhatsapp) return null
-  const digits = rawWhatsapp.replace(/\D/g, '')
-  if (!digits) return null
+  const trimmed = rawWhatsapp.trim()
+  const digits = trimmed.replace(/\D/g, '')
   const message = title ? `Hola, me interesa el proyecto ${title}` : 'Hola, quiero hacer una consulta'
-  return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`
+  // Número (o link wa.me con número): armamos wa.me con el mensaje pre-cargado del producto.
+  if (digits.length >= 8) {
+    return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`
+  }
+  // Link ya armado (ej. wa.link/xxxx): se usa tal cual. No admite inyectar mensaje por producto.
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+  return null
 }
 
 /**

@@ -23,7 +23,8 @@ export type CategoryFormData = z.infer<typeof categorySchema>
 
 export const siteSettingsSchema = z.object({
   about_text: z.string(),
-  whatsapp_url: z.string().url().nullable().or(z.literal('')).transform(v => v || null),
+  // Acepta número (5493411234567) o link (wa.me / wa.link). El helper buildWhatsappUrl normaliza.
+  whatsapp_url: z.string().nullable().or(z.literal('')).transform(v => v || null),
   email: z.string().email().nullable().or(z.literal('')).transform(v => v || null),
   hero_image: z.string().nullable(),
   instagram_url: z.string().url().nullable().or(z.literal('')).transform(v => v || null),

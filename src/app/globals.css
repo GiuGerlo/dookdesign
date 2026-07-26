@@ -560,15 +560,13 @@ body {
 [data-theme="dark"] .gg-for-dark { opacity: 0.85; }
 [data-theme="dark"] .gg-for-light { opacity: 0; }
 
+/* Capa GPU permanente para todo render servido a tamaño chico → raster nítido en reposo
+   (si no, el navegador reescala el webp de 3840px con filtro rápido y se ve borroso/aliased).
+   La aplica RenderImage siempre (grid del home, cards de /proyectos y galería del detalle). */
+.render-crisp { transform: translateZ(0); will-change: transform; backface-visibility: hidden; }
+
 /* Cards de proyecto: B&N → color + zoom solo con hover real; touch siempre color */
-/* translateZ(0)+will-change: capa GPU permanente → raster nítido en reposo (si no, el navegador
-   reescala el render de 3840px con filtro rápido y se ve borroso/aliased). */
-.project-card .card-render {
-  transition: filter 400ms ease, transform 500ms ease, opacity 400ms ease;
-  transform: translateZ(0);
-  will-change: transform;
-  backface-visibility: hidden;
-}
+.project-card .card-render { transition: filter 400ms ease, transform 500ms ease, opacity 400ms ease; }
 @media (hover: hover) and (pointer: fine) {
   .project-card .card-render { filter: grayscale(1); }
   .project-card:hover .card-render { filter: none; transform: scale(1.05) translateZ(0); }

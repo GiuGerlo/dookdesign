@@ -15,6 +15,28 @@ Historial por fase. Formato en `.claude/rules/docs-workflow.md`.
 **Migración**: nada / pasos.
 -->
 
+## [2026-07-25] fase-5 — Páginas públicas (home + listado + detalle)
+
+**Resumen**: Se cablearon las tres páginas públicas con data real de Supabase, portando los diseños de claude design a componentes Next.js 16 + Tailwind v4. Cierra la Fase 5.
+
+**Cambios**:
+- **Home `/`**: hero fullscreen (portada de `site_settings` o fallback al featured), "Sobre mí" (`about_text`), grilla de proyectos y footer/CTA. Componentes en `src/components/site/` (`SiteNav` con menú y toggle de tema View Transitions, `HomeHero`, `HomeGallery`, `SiteFooter`, `Reveal`, `ScrollCue`, `RenderImage`). Default tema oscuro.
+- **Grilla curada del home (admin)**: `site_settings.home_grid` (jsonb) + `location`. Nueva página `/admin/inicio` con editor drag&drop (dnd-kit) para elegir qué proyecto, en qué orden y tamaño (`sm/wide/tall/big`); fallback a 6 publicados si está vacía. Migraciones `0010`/`0011`.
+- **Listado `/proyectos`**: `ProjectsGrid` (client) con filtros categoría+año (AND), grilla 1/2/3 col, cards 4:3 B&N→color al hover, "Ver más" tras 6, estado vacío. Intro estático.
+- **Detalle `/proyectos/[slug]`**: `ProjectHero` (embla) carrusel fullscreen con flechas/dots/contador/teclado/swipe y **entrada fade-up escalonada**; contenido (materiales + descripción); `ProjectGallery` con lightbox zoom; CTA WhatsApp/Email global con mensaje por proyecto; **"Otros proyectos"** (3 cards: misma categoría primero al azar, luego otras); título del proyecto en el nav al scrollear. `generateMetadata` por proyecto; slug inexistente → 404.
+  - **Lightbox compartido** (`ProjectLightbox`, context): la galería y el click en la imagen del hero abren el mismo lightbox (`yet-another-react-lightbox` + Zoom), mapeado por índice de render.
+- **Imágenes**: `RenderImage`/hero sirven el WebP del bucket tal cual (`unoptimized`) + capa GPU (`.render-crisp`) aplicada por `RenderImage` para nitidez en reposo (evita el reescalado borroso del navegador en cards y galería).
+- **Contacto WhatsApp**: `buildWhatsappUrl` acepta número (arma `wa.me/<n>?text=…{proyecto}`) o link ya hecho (wa.me/wa.link, usado tal cual). Schema `whatsapp_url` relajado (ya no exige URL) + campo de admin re-etiquetado a "número".
+- **Config admin**: `/admin/configuracion` en 2 columnas (portada `object-contain` | Sobre Agustín), contacto/redes/ubicación en una card compacta.
+- **Footer**: columna "Ubicación" condicional, iconos lucide en contacto/redes/ubicación, logo gg linkeado a giulianogerlo.vercel.app (con hover). Navlinks del menú con hover.
+- **Seguridad**: headers en `next.config.ts` (`headers()`) — CSP, HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy. `/security-review` sobre la rama: sin findings.
+- **Limpieza**: `suppressHydrationWarning` en `<body>` (extensiones tipo ColorZilla inyectan attrs); borrado `getPublishedSlugs` (sin uso, no hay `generateStaticParams`); borrada la carpeta `.design/` (mocks de referencia, ya portados).
+
+**Breaking**: nada.
+**Migración**: `0010_site_settings_hero_socials.sql` y `0011_home_grid_location.sql` aplicadas vía MCP.
+
+---
+
 ## [2026-07-25] fase-5 (WIP) — Prep backend /proyectos + hardening admin
 
 **Resumen**: Preparación del backend (independiente del diseño) para las páginas `/proyectos` y `/proyectos/[slug]`, más limpieza y hardening del admin. El diseño visual de esas páginas se arma aparte en claude design y se cablea después.

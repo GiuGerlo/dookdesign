@@ -13,7 +13,7 @@ const MENU_LINKS = [
 
 // Nav fija del sitio: transparente arriba, fondo + blur al scrollear.
 // `overHero`: la página abre con una foto oscura fullscreen → íconos/logo en claro hasta scrollear.
-export function SiteNav({ overHero = false }: { overHero?: boolean }) {
+export function SiteNav({ overHero = false, scrolledLabel }: { overHero?: boolean; scrolledLabel?: string }) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -49,6 +49,16 @@ export function SiteNav({ overHero = false }: { overHero?: boolean }) {
             priority
           />
         </Link>
+
+        {scrolledLabel && (
+          <span
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 hidden -translate-x-1/2 text-sm font-semibold tracking-[-0.01em] transition-opacity duration-300 md:block"
+            style={{ opacity: scrolled && !menuOpen ? 1 : 0 }}
+          >
+            {scrolledLabel}
+          </span>
+        )}
 
         <div className="flex items-center gap-4">
           <ThemeToggle className="flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border border-current/40 text-current transition-colors duration-300" />

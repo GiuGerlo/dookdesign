@@ -28,16 +28,6 @@ export async function getProjectBySlug(slug: string): Promise<Tables<'projects'>
   return data
 }
 
-export async function getPublishedSlugs(): Promise<string[]> {
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('projects')
-    .select('slug')
-    .eq('published', true)
-  if (error) throw new Error(error.message)
-  return (data ?? []).map(r => r.slug)
-}
-
 export async function getCategories(): Promise<Tables<'categories'>[]> {
   const supabase = await createClient()
   const { data, error } = await supabase

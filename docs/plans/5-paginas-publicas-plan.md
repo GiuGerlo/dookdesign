@@ -2,11 +2,11 @@
 
 - **Spec**: `docs/superpowers/specs/2026-07-25-fase5-paginas-publicas-design.md`
 - **Rama**: `fase/5-paginas-publicas` — 3 sub-fases = 3 commits (Home → listado → detalle). Merge a main al cerrar.
-- **Estado**: en progreso
+- **Estado**: DONE (2026-07-25) — B1+B1.1 (home), B2 (/proyectos), B3 (detalle + headers) implementados y verificados con build.
 
 ## Reusar (ya existe)
 
-- `src/lib/projects/queries.ts` — getPublishedProjects / getProjectBySlug / getPublishedSlugs / getCategories / getSiteSettings.
+- `src/lib/projects/queries.ts` — getPublishedProjects / getProjectBySlug / getCategories / getSiteSettings.
 - `src/lib/site/contact.ts` — buildWhatsappUrl / buildMailto (title opcional → mensaje genérico).
 - `src/lib/site/images.ts` — getPublicRenderUrl (puro, server-safe).
 - `yet-another-react-lightbox` (+ plugin Zoom). Tema: vars CSS + `[data-theme="dark"]`; script anti-flash en layout raíz.

@@ -17,7 +17,7 @@ Esquema de fases: **números 1–N**.
 | 3 | Modelo de datos + Supabase (Postgres + Storage + RLS) | DONE | 1 | 2026-07-23 |
 | 4 | Admin con login (Supabase Auth) — CRUD + upload de renders | DONE | 3 | 2026-07-23 |
 | 4.5 | Admin redesign (shadcn/ui, bugs, sileo, logos) | DONE | 4 | 2026-07-23 |
-| 5 | Galería pública + página de proyecto con animaciones | en progreso | 2, 4 | — |
+| 5 | Galería pública + página de proyecto con animaciones | DONE | 2, 4 | 2026-07-25 |
 
 > Ajustá las fases a medida que se concreten. Cada fase: spec → plan → tasks → cierre
 > (ver `.claude/rules/docs-workflow.md`).
@@ -81,10 +81,18 @@ El panel admin está funcional y en producción. Rutas bajo `/admin/`:
 - RLS: cada tabla necesita policy `SELECT` explícita para `authenticated` además de la de `anon` (si no, el admin logueado no lee). Hecho para `categories` (0005), `site_settings` (0007) y `storage.objects`/renders (0009 — sin esto `storage.remove()` borra en silencio). El bucket `renders` es público (0008) para servir por CDN.
 - Favicon: necesita versión cuadrada 32×32 del logo
 
-## Próximos pasos (Fase 5, continúa mañana)
+## Fase 5 — Cierre (2026-07-25)
 
-- Portar el Home maquetado a componentes Next.js 16 / React + Tailwind, conectando la data de Supabase (`projects`, `categories`, `site_settings`).
-- **[hecho 2026-07-25] Prep backend `/proyectos`**: data layer público (`src/lib/projects/queries.ts`), helper de contacto seguro (`src/lib/site/contact.ts`), contacto global (ADR 0001 + migración 0006), auth `getUser()`. Deps de UI diferidas.
-- Diseñar en **claude design** el **listado `/proyectos`** y el **detalle `/proyectos/[slug]`** (brief en el plan). Al volver: wiring + deps UI (`motion`, `embla-carousel-react`, `yet-another-react-lightbox`).
-  - Listado: filtro categoría+año, orden reciente→antiguo, cards B&W→color al hover (móvil color), "ver más" tras 6.
-  - Detalle: hero carrusel fullscreen, descripción/materiales, galería con lightbox+zoom, CTA WhatsApp/email global.
+**DONE**. Las tres páginas públicas implementadas con data real de Supabase (ver `docs/changelog.md`):
+
+- **Home `/`**: hero + Sobre mí + grilla curada (editable en `/admin/inicio`, `home_grid`) + footer/CTA.
+- **Listado `/proyectos`**: filtros categoría+año, "ver más" tras 6, estado vacío.
+- **Detalle `/proyectos/[slug]`**: hero carrusel (embla) + contenido + galería con lightbox zoom + CTA WhatsApp/email por proyecto + "Otros proyectos" + prev en nav al scrollear.
+- Headers de seguridad en `next.config.ts`; `/security-review` sin findings.
+- Deps: `motion`, `embla-carousel-react`, `yet-another-react-lightbox`. Migraciones `0010`/`0011` aplicadas.
+
+**Pendiente operativo (post-fase):**
+- Merge de `fase/5-paginas-publicas` → `main`.
+- Deploy a Vercel (prod desde `main`), verificar imágenes de Supabase y headers en el entorno real.
+- Cargar el WhatsApp como **número** en `/admin/configuracion` para que el CTA lleve el mensaje por proyecto.
+- Favicon cuadrado 32×32 (pendiente de fases anteriores).

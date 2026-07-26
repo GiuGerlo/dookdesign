@@ -133,9 +133,10 @@ export function SiteSettingsForm({ settings }: { settings: Tables<'site_settings
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <Label className={labelClass}>WhatsApp URL</Label>
-            <Input type="url" {...register('whatsapp_url')} placeholder="https://wa.me/..." className={inputClass} />
+            <Label className={labelClass}>WhatsApp (número)</Label>
+            <Input {...register('whatsapp_url')} placeholder="5493411234567" className={inputClass} />
             {errors.whatsapp_url && <p className="text-xs text-destructive">{errors.whatsapp_url.message}</p>}
+            <p className="text-xs text-muted-foreground">Cargá el número con código de país (sin +). Así el mensaje llega pre-cargado con el proyecto. También acepta un link wa.me/wa.link (pero sin mensaje por producto).</p>
           </div>
           <div className="space-y-1.5">
             <Label className={labelClass}>Email</Label>
