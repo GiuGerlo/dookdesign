@@ -32,7 +32,8 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={dmSans.variable}>
+      {/* suppressHydrationWarning: extensiones del navegador (ej. ColorZilla) inyectan attrs en el body */}
+      <body className={dmSans.variable} suppressHydrationWarning>
         {children}
       </body>
     </html>

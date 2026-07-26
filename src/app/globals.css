@@ -561,10 +561,17 @@ body {
 [data-theme="dark"] .gg-for-light { opacity: 0; }
 
 /* Cards de proyecto: B&N → color + zoom solo con hover real; touch siempre color */
-.project-card .card-render { transition: filter 400ms ease, transform 500ms ease, opacity 400ms ease; }
+/* translateZ(0)+will-change: capa GPU permanente → raster nítido en reposo (si no, el navegador
+   reescala el render de 3840px con filtro rápido y se ve borroso/aliased). */
+.project-card .card-render {
+  transition: filter 400ms ease, transform 500ms ease, opacity 400ms ease;
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
 @media (hover: hover) and (pointer: fine) {
   .project-card .card-render { filter: grayscale(1); }
-  .project-card:hover .card-render { filter: none; transform: scale(1.05); }
+  .project-card:hover .card-render { filter: none; transform: scale(1.05) translateZ(0); }
 }
 .project-card__overlay { opacity: 0; transition: opacity 300ms ease; }
 @media (hover: hover) and (pointer: fine) {

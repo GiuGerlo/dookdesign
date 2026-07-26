@@ -1,6 +1,9 @@
 import Image from 'next/image'
+import { MessageCircle, Mail, AtSign, MapPin, ExternalLink, type LucideIcon } from 'lucide-react'
 import { buildWhatsappUrl, buildMailto } from '@/lib/site/contact'
 import type { Tables } from '@/types/database'
+
+const socialIcon: Record<string, LucideIcon> = { Instagram: AtSign, Behance: ExternalLink }
 
 interface SiteFooterProps {
   settings: Tables<'site_settings'> | null
@@ -78,12 +81,14 @@ export function SiteFooter({ settings, mini = false }: SiteFooterProps) {
           <div className="flex flex-col gap-2.5">
             <span className="text-[11px] uppercase tracking-[0.14em] text-(--text-secondary)">Contacto</span>
             {waUrl && (
-              <a href={waUrl} target="_blank" rel="noopener noreferrer" className="text-[15px] font-medium hover:text-(--brand)">
+              <a href={waUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-[15px] font-medium hover:text-(--brand)">
+                <MessageCircle className="h-[18px] w-[18px] text-(--text-secondary)" aria-hidden />
                 WhatsApp
               </a>
             )}
             {mailto && settings?.email && (
-              <a href={mailto} className="text-[15px] font-medium hover:text-(--brand)">
+              <a href={mailto} className="flex items-center gap-2.5 text-[15px] font-medium hover:text-(--brand)">
+                <Mail className="h-[18px] w-[18px] text-(--text-secondary)" aria-hidden />
                 {settings.email}
               </a>
             )}
@@ -91,23 +96,30 @@ export function SiteFooter({ settings, mini = false }: SiteFooterProps) {
           {socials.length > 0 && (
             <div className="flex flex-col gap-2.5">
               <span className="text-[11px] uppercase tracking-[0.14em] text-(--text-secondary)">Redes</span>
-              {socials.map(s => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[15px] font-medium hover:text-(--brand)"
-                >
-                  {s.label}
-                </a>
-              ))}
+              {socials.map(s => {
+                const Icon = socialIcon[s.label] ?? ExternalLink
+                return (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2.5 text-[15px] font-medium hover:text-(--brand)"
+                  >
+                    <Icon className="h-[18px] w-[18px] text-(--text-secondary)" aria-hidden />
+                    {s.label}
+                  </a>
+                )
+              })}
             </div>
           )}
           {settings?.location && (
             <div className="flex flex-col gap-2.5">
               <span className="text-[11px] uppercase tracking-[0.14em] text-(--text-secondary)">Ubicación</span>
-              <span className="text-[15px] font-medium">{settings.location}</span>
+              <span className="flex items-center gap-2.5 text-[15px] font-medium">
+                <MapPin className="h-[18px] w-[18px] text-(--text-secondary)" aria-hidden />
+                {settings.location}
+              </span>
             </div>
           )}
         </div>

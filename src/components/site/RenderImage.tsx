@@ -25,8 +25,8 @@ export function RenderImage({ src, alt, sizes, priority = false, className = '' 
         fill
         sizes={sizes}
         priority={priority}
-        // ponytail: unoptimized = sirve el webp del bucket tal cual (ya viene optimizado a 3840px/~1MB).
-        // Next re-encodaba a q75 y se veía borroso. Costo: móvil baja la full-res. Revisar si el ancho de banda molesta.
+        // unoptimized: sirve el webp del bucket tal cual (ya optimizado a 3840px en el admin). Máxima
+        // calidad. La nitidez en reposo la garantiza la capa GPU forzada en .card-render (globals.css).
         unoptimized
         onLoad={() => setLoaded(true)}
         className={`object-cover transition-opacity duration-400 ${loaded ? 'opacity-100' : 'opacity-0'} ${className}`}
