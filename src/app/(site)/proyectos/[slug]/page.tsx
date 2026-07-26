@@ -24,10 +24,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const description =
     project.description?.slice(0, 155) || `${project.title}, diseño industrial de Agustín Cavallera.`
   const canonical = `/proyectos/${slug}`
-  // OG = imagen principal del producto (render ya público en el CDN); fallback al OG del sitio.
-  const cover = project.renders[0] ? getPublicRenderUrl(project.renders[0]) : null
-  const ogImage = cover
-    ? { url: cover, width: 1200, height: 900, alt: `${project.title} — render` }
+  // OG = render principal recortado a 1200×630 por la route /og (preview grande en redes).
+  // Fallback al OG del sitio si el proyecto no tiene renders.
+  const ogImage = project.renders[0]
+    ? { url: `/proyectos/${slug}/og`, width: 1200, height: 630, alt: `${project.title} — render` }
     : { url: '/opengraph.png', width: 1200, height: 630, alt: 'DooK Design' }
 
   return {

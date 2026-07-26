@@ -27,6 +27,8 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
+  // sharp se usa en la route OG (server). No bundlearla — se resuelve como binario nativo.
+  serverExternalPackages: ['sharp'],
   images: {
     remotePatterns: [
       {

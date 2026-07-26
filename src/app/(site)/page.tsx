@@ -85,6 +85,7 @@ export default async function Home() {
       <JsonLd data={jsonLd} />
       <SiteNav overHero />
       <main>
+        <h1 className="sr-only">DooK Design — Diseño industrial de Agustín Cavallera</h1>
         <HomeHero imageUrl={heroUrl} />
 
         <Reveal className="px-5 pb-8 pt-20 text-center md:px-16 md:pb-12 md:pt-32">

@@ -15,6 +15,18 @@ Historial por fase. Formato en `.claude/rules/docs-workflow.md`.
 **Migración**: nada / pasos.
 -->
 
+## [2026-07-26] seo — Correcciones post-audit + OG de producto 1200×630
+
+**Resumen**: Tras el audit sobre el sitio live: H1 en la home y OG de producto en formato grande (1200×630) para el preview de redes.
+
+**Cambios**:
+- **H1 en la home**: `<h1 class="sr-only">` con el nombre/rubro (antes solo había `<h2>`). Sin cambio visual.
+- **OG de producto 1200×630**: nueva route `src/app/(site)/proyectos/[slug]/og/route.ts` que recorta el render principal a 1200×630 con `sharp` (el render es webp 4:3 → WhatsApp lo mostraba como thumbnail chico). `generateMetadata` apunta `og:image`/`twitter:image` a esa route. Se cachea en el CDN. `sharp` agregado como dep directa + `serverExternalPackages: ['sharp']` en `next.config.ts`.
+
+**Breaking**: nada.
+**Migración**: nada.
+**Pendiente usuario**: reemplazar `public/opengraph.png` (OG por defecto), agregar dominio `www` en Vercel, cargar `about_text`.
+
 ## [2026-07-26] seo — SEO integral + OpenGraph + Analytics + fix email
 
 **Resumen**: Portfolio comercial → SEO técnico/on-page completo, OpenGraph dinámico por proyecto, datos estructurados, AEO (llms.txt), Vercel Analytics, y arreglo del botón de email.
