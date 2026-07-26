@@ -5,6 +5,10 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    # Ignorar saltos de versión MAYOR: suelen romper el build (ej. TypeScript 5→7). Solo minor/patch.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       # Un solo PR semanal con todos los patch/minor para no inundar.
       all-minor-patch:
