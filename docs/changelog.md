@@ -22,6 +22,8 @@ Historial por fase. Formato en `.claude/rules/docs-workflow.md`.
 **Cambios**:
 - **H1 en la home**: `<h1 class="sr-only">` con el nombre/rubro (antes solo había `<h2>`). Sin cambio visual.
 - **OG de producto 1200×630**: nueva route `src/app/(site)/proyectos/[slug]/og/route.ts` que recorta el render principal a 1200×630 con `sharp` (el render es webp 4:3 → WhatsApp lo mostraba como thumbnail chico). `generateMetadata` apunta `og:image`/`twitter:image` a esa route. Se cachea en el CDN. `sharp` agregado como dep directa + `serverExternalPackages: ['sharp']` en `next.config.ts`.
+  - **Fix Vercel**: en prod la route daba 500 (`libvips-cpp.so ... No such file` — el file-tracing de Next no arrastraba el binario nativo de libvips a la lambda). Solución: `outputFileTracingIncludes` para forzar `@img/sharp-*-linux-x64` + import dinámico de sharp con `try/catch` que cae al OG por defecto (nunca 500).
+- **Instagram con logo**: el footer usaba `AtSign` (@) porque lucide-react 1.25 ya no trae logos de marca. Reemplazado por un SVG inline del logo de Instagram (`src/components/site/SiteFooter.tsx`).
 
 **Breaking**: nada.
 **Migración**: nada.
