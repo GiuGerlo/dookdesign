@@ -28,7 +28,7 @@ export default function LoginPage() {
     if (error) {
       setError('Código o contraseña incorrectos')
     } else {
-      router.push('/admin/proyectos')
+      router.push('/admin/inicio')
     }
   }
 

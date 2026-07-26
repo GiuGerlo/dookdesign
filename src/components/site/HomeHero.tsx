@@ -3,15 +3,26 @@ import { ScrollCue } from '@/components/site/ScrollCue'
 
 interface HomeHeroProps {
   imageUrl: string | null
+  videoUrl?: string | null
   focusY?: number
   focusX?: number
 }
 
-// Hero fullscreen del home: portada elegida en admin + logo DK superpuesto.
-export function HomeHero({ imageUrl, focusY = 50, focusX = 50 }: HomeHeroProps) {
+// Hero fullscreen del home: portada elegida en admin (imagen o video) + logo DK superpuesto.
+export function HomeHero({ imageUrl, videoUrl, focusY = 50, focusX = 50 }: HomeHeroProps) {
   return (
     <header className="relative h-[560px] overflow-hidden md:h-svh">
-      {imageUrl ? (
+      {videoUrl ? (
+        <video
+          src={videoUrl}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ objectPosition: `${focusX}% ${focusY}%` }}
+        />
+      ) : imageUrl ? (
         <Image
           src={imageUrl}
           alt="Render destacado de DooK Design"

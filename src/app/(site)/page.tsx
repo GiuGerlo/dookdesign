@@ -19,6 +19,7 @@ export default async function Home() {
   const fallbackCover = (projects.find(p => p.featured) ?? projects[0])?.renders[0] ?? null
   const heroPath = settings?.hero_image ?? fallbackCover
   const heroUrl = heroPath ? getPublicRenderUrl(heroPath) : null
+  const heroVideoUrl = settings?.hero_video ? getPublicRenderUrl(settings.hero_video) : null
 
   // Grilla curada del home (home_grid): join por id con los publicados, ignorando ids huérfanos.
   const parsed = homeGridSchema.safeParse(settings?.home_grid ?? [])
@@ -90,7 +91,7 @@ export default async function Home() {
       <SiteNav overHero />
       <main>
         <h1 className="sr-only">DooK Design — Diseño industrial de Agustín Cavallera</h1>
-        <HomeHero imageUrl={heroUrl} focusY={settings?.hero_focus ?? 50} focusX={settings?.hero_focus_x ?? 50} />
+        <HomeHero imageUrl={heroUrl} videoUrl={heroVideoUrl} focusY={settings?.hero_focus ?? 50} focusX={settings?.hero_focus_x ?? 50} />
 
         <Reveal className="px-5 pb-8 pt-20 text-center md:px-16 md:pb-12 md:pt-32">
           <section id="sobre" aria-label="Sobre mí">

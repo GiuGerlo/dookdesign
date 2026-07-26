@@ -33,6 +33,11 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/admin/login', request.url))
   }
 
+  // Ya logueado no debería ver el login: lo mandamos al panel.
+  if (isLoginPage && user) {
+    return NextResponse.redirect(new URL('/admin/inicio', request.url))
+  }
+
   return response
 }
 

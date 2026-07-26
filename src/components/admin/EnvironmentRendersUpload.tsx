@@ -56,6 +56,8 @@ interface EnvThumbProps {
 function EnvThumb({ path, layout, onSize, onFocus, onFocusX, onDelete }: EnvThumbProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: path })
   const [imgAspect, setImgAspect] = useState<number | null>(null)
+  // Archivo faltante en storage (ref huérfana) → placeholder gris en vez de caja negra.
+  const [broken, setBroken] = useState(false)
   const geom = envSizeGeom[layout.size]
   const cellAr = arToNumber(geom.ar)
   // Recorte por eje según el aspecto de la imagen vs la forma de la celda (mutuamente excluyentes).
@@ -77,14 +79,21 @@ function EnvThumb({ path, layout, onSize, onFocus, onFocusX, onDelete }: EnvThum
         isDragging && 'opacity-70 shadow-2xl ring-1 ring-primary/40'
       )}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={getRenderUrl(path)}
-        alt=""
-        className="absolute inset-0 h-full w-full object-cover opacity-80"
-        onLoad={e => setImgAspect(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight)}
-        style={{ objectPosition: `${layout.focus_x}% ${layout.focus}%` }}
-      />
+      {broken ? (
+        <div className="absolute inset-0 flex items-center justify-center bg-white/[0.04] px-2 text-center text-[10px] text-muted-foreground">
+          Imagen no disponible — borrala y volvé a subirla
+        </div>
+      ) : (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={getRenderUrl(path)}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover opacity-80"
+          onLoad={e => setImgAspect(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight)}
+          onError={() => setBroken(true)}
+          style={{ objectPosition: `${layout.focus_x}% ${layout.focus}%` }}
+        />
+      )}
 
       <input
         type="range"

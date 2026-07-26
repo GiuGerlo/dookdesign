@@ -1,14 +1,10 @@
 'use client'
 
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useDropzone } from 'react-dropzone'
-import { Loader2 } from 'lucide-react'
 import { sileo } from 'sileo'
 import { siteSettingsSchema, type SiteSettingsFormData } from '@/lib/admin/schemas'
 import { updateSiteSettings } from '@/lib/admin/actions'
-import { uploadRender, deleteRender, getRenderUrl, optimizeRender } from '@/lib/admin/storage'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
@@ -17,13 +13,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Tables } from '@/types/database'
 
 export function SiteSettingsForm({ settings }: { settings: Tables<'site_settings'> }) {
-  const [uploading, setUploading] = useState(false)
-
   const {
     register,
     handleSubmit,
-    setValue,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<SiteSettingsFormData>({
     resolver: zodResolver(siteSettingsSchema),
@@ -31,41 +23,9 @@ export function SiteSettingsForm({ settings }: { settings: Tables<'site_settings
       about_text: settings.about_text ?? '',
       whatsapp_url: settings.whatsapp_url ?? '',
       email: settings.email ?? '',
-      hero_image: settings.hero_image,
-      hero_focus: settings.hero_focus ?? 50,
-      hero_focus_x: settings.hero_focus_x ?? 50,
       instagram_url: settings.instagram_url ?? '',
       behance_url: settings.behance_url ?? '',
       location: settings.location ?? '',
-    },
-  })
-
-  const heroImage = watch('hero_image')
-  const heroFocus = watch('hero_focus')
-  const heroFocusX = watch('hero_focus_x')
-  // null = sin cargar; false = imagen más ancha que el hero → sin recorte vertical para ajustar.
-  const [heroAdjustable, setHeroAdjustable] = useState<boolean | null>(null)
-  // Eje X: false = imagen más alta que el hero → entra completa a lo ancho, sin recorte horizontal.
-  const [heroAdjustableX, setHeroAdjustableX] = useState<boolean | null>(null)
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: { 'image/*': [] },
-    multiple: false,
-    disabled: uploading,
-    onDrop: async ([file]) => {
-      if (!file) return
-      setUploading(true)
-      try {
-        const path = await uploadRender(await optimizeRender(file), 'site')
-        // Borrar la portada anterior recién después de subir la nueva (si falla, no perdemos nada)
-        if (heroImage) await deleteRender(heroImage).catch(() => {})
-        setValue('hero_image', path, { shouldDirty: true })
-        sileo.success({ title: 'Portada subida — guardá para aplicar' })
-      } catch {
-        sileo.error({ title: 'No se pudo subir la portada' })
-      } finally {
-        setUploading(false)
-      }
     },
   })
 
@@ -83,102 +43,19 @@ export function SiteSettingsForm({ settings }: { settings: Tables<'site_settings
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <div className="grid gap-5 md:grid-cols-2 md:items-stretch">
-        <Card className="bg-card border-white/[0.08]">
-          <CardHeader className="pb-4 pt-5">
-            <CardTitle className={labelClass}>Portada del home</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {heroImage && (
-              <div className="relative aspect-video overflow-hidden rounded-md bg-black/30">
-                {/* Preview con el formato del hero (cover) + encuadre X/Y en vivo. */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={getRenderUrl(heroImage)}
-                  alt="Portada del home"
-                  className="w-full h-full object-cover"
-                  onLoad={e => {
-                    const el = e.currentTarget
-                    const ar = el.naturalWidth / el.naturalHeight
-                    // Preview 16:9: recorte vertical si la imagen es más alta; horizontal si es más ancha.
-                    setHeroAdjustable(ar < 16 / 9 - 0.02)
-                    setHeroAdjustableX(ar > 16 / 9 + 0.02)
-                  }}
-                  style={{ objectPosition: `${heroFocusX}% ${heroFocus}%` }}
-                />
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  value={heroFocus}
-                  disabled={heroAdjustable === false}
-                  onChange={e => setValue('hero_focus', Number(e.target.value), { shouldDirty: true })}
-                  aria-label="Encuadre vertical de la portada"
-                  title={
-                    heroAdjustable === false
-                      ? 'Imagen más ancha que el hero: entra completa, sin recorte vertical para ajustar'
-                      : 'Encuadre del hero (arriba ↔ abajo)'
-                  }
-                  className="render-thumb__focus"
-                  style={{ writingMode: 'vertical-lr', opacity: 1 }}
-                />
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  value={heroFocusX}
-                  disabled={heroAdjustableX === false}
-                  onChange={e => setValue('hero_focus_x', Number(e.target.value), { shouldDirty: true })}
-                  aria-label="Encuadre horizontal de la portada"
-                  title={
-                    heroAdjustableX === false
-                      ? 'Imagen más alta que el hero: entra completa a lo ancho, sin recorte horizontal para ajustar'
-                      : 'Encuadre del hero (izquierda ↔ derecha)'
-                  }
-                  className="render-thumb__focus render-thumb__focus--x"
-                  style={{ opacity: 1 }}
-                />
-                {(heroAdjustable === false || heroAdjustableX === false) && (
-                  <span className="render-thumb__badge">
-                    {heroAdjustable === false ? 'sin recorte vertical' : 'sin recorte horizontal'}
-                  </span>
-                )}
-              </div>
-            )}
-            <div
-              {...getRootProps()}
-              className={`renders-dropzone${isDragActive ? ' renders-dropzone--active' : ''}${uploading ? ' opacity-60 pointer-events-none' : ''}`}
-            >
-              <input {...getInputProps()} />
-              {uploading ? (
-                <p className="flex items-center justify-center gap-2">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  Optimizando y subiendo…
-                </p>
-              ) : (
-                <p>{heroImage ? 'Arrastrá una imagen para reemplazar la portada' : 'Arrastrá la imagen de portada del home o hacé clic'}</p>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Se muestra a pantalla completa en el inicio. Ideal: horizontal, alta resolución (se optimiza sola). El deslizador de la derecha ajusta el encuadre vertical (arriba ↔ abajo).
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border-white/[0.08] flex flex-col">
-          <CardHeader className="pb-4 pt-5">
-            <CardTitle className={labelClass}>Sobre Agustín</CardTitle>
-          </CardHeader>
-          <CardContent className="flex-1 flex flex-col">
-            <Textarea
-              {...register('about_text')}
-              placeholder="Texto sobre Agustín Cavallera..."
-              className={`${inputClass} flex-1 min-h-[200px] resize-none`}
-            />
-            {errors.about_text && <p className="text-xs text-destructive mt-1.5">{errors.about_text.message}</p>}
-          </CardContent>
-        </Card>
-      </div>
+      <Card className="bg-card border-white/[0.08]">
+        <CardHeader className="pb-4 pt-5">
+          <CardTitle className={labelClass}>Sobre Agustín</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Textarea
+            {...register('about_text')}
+            placeholder="Texto sobre Agustín Cavallera..."
+            className={`${inputClass} min-h-[200px] resize-none`}
+          />
+          {errors.about_text && <p className="text-xs text-destructive mt-1.5">{errors.about_text.message}</p>}
+        </CardContent>
+      </Card>
 
       <Card className="bg-card border-white/[0.08]">
         <CardHeader className="pb-4 pt-5">
@@ -218,7 +95,7 @@ export function SiteSettingsForm({ settings }: { settings: Tables<'site_settings
       </Card>
 
       <div className="flex justify-end">
-        <Button type="submit" disabled={isSubmitting || uploading}>
+        <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Guardando…' : 'Guardar configuración'}
         </Button>
       </div>

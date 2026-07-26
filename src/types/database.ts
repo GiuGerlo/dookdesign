@@ -91,6 +91,7 @@ export type Database = {
           hero_focus: number
           hero_focus_x: number
           hero_image: string | null
+          hero_video: string | null
           home_grid: Json
           id: string
           instagram_url: string | null
@@ -105,6 +106,7 @@ export type Database = {
           hero_focus?: number
           hero_focus_x?: number
           hero_image?: string | null
+          hero_video?: string | null
           home_grid?: Json
           id?: string
           instagram_url?: string | null
@@ -119,6 +121,7 @@ export type Database = {
           hero_focus?: number
           hero_focus_x?: number
           hero_image?: string | null
+          hero_video?: string | null
           home_grid?: Json
           id?: string
           instagram_url?: string | null

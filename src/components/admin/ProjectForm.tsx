@@ -123,10 +123,10 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
+      <div className="columns-1 gap-5 md:columns-2 [column-fill:balance]">
 
       {/* Información */}
-      <Card className="bg-card border-white/[0.08]">
+      <Card className="bg-card border-white/[0.08] mb-5 break-inside-avoid">
         <CardHeader className="pb-4 pt-5">
           <CardTitle className={labelClass}>Información</CardTitle>
         </CardHeader>
@@ -211,7 +211,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
       </Card>
 
       {/* Descripción */}
-      <Card className="bg-card border-white/[0.08]">
+      <Card className="bg-card border-white/[0.08] mb-5 break-inside-avoid">
         <CardHeader className="pb-4 pt-5">
           <CardTitle className={labelClass}>Descripción</CardTitle>
         </CardHeader>
@@ -226,7 +226,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
       </Card>
 
       {/* Publicación */}
-      <Card className="bg-card border-white/[0.08]">
+      <Card className="bg-card border-white/[0.08] mb-5 break-inside-avoid">
         <CardHeader className="pb-4 pt-5">
           <CardTitle className={labelClass}>Publicación</CardTitle>
         </CardHeader>
@@ -247,7 +247,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
       </Card>
 
       {/* Renders */}
-      <Card className="bg-card border-white/[0.08]">
+      <Card className="bg-card border-white/[0.08] mb-5 break-inside-avoid">
         <CardHeader className="pb-4 pt-5">
           <CardTitle className={labelClass}>Renders</CardTitle>
         </CardHeader>
@@ -272,7 +272,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
       </Card>
 
       {/* Renders de entorno */}
-      <Card className="bg-card border-white/[0.08]">
+      <Card className="bg-card border-white/[0.08] mb-5 break-inside-avoid">
         <CardHeader className="pb-4 pt-5">
           <CardTitle className={labelClass}>Renders de entorno</CardTitle>
         </CardHeader>

@@ -54,6 +54,8 @@ function RenderThumb({ path, focus, focusX, onFocus, onFocusX, onDelete, onOpen 
   // null = todavía no cargó; true/false = si la imagen tiene recorte ajustable en ese eje.
   const [adjustable, setAdjustable] = useState<boolean | null>(null)
   const [adjustableX, setAdjustableX] = useState<boolean | null>(null)
+  // Archivo faltante en storage (ref huérfana) → placeholder en vez de caja negra.
+  const [broken, setBroken] = useState(false)
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -62,20 +64,27 @@ function RenderThumb({ path, focus, focusX, onFocus, onFocusX, onDelete, onOpen 
   return (
     <div ref={setNodeRef} style={style} className="render-thumb render-thumb--wide" {...attributes}>
       <div className="render-thumb__handle" {...listeners}>⠿</div>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={getRenderUrl(path)}
-        alt=""
-        className="render-thumb__img"
-        onClick={onOpen}
-        onLoad={e => {
-          const el = e.currentTarget
-          const ar = el.naturalWidth / el.naturalHeight
-          setAdjustable(ar < HERO_RATIO - 0.001)
-          setAdjustableX(ar > HERO_RATIO + 0.001)
-        }}
-        style={{ cursor: 'zoom-in', objectPosition: `${focusX}% ${focus}%` }}
-      />
+      {broken ? (
+        <div className="render-thumb__img flex items-center justify-center bg-white/[0.04] px-2 text-center text-[10px] text-muted-foreground">
+          Imagen no disponible — borrala y volvé a subirla
+        </div>
+      ) : (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={getRenderUrl(path)}
+          alt=""
+          className="render-thumb__img"
+          onClick={onOpen}
+          onLoad={e => {
+            const el = e.currentTarget
+            const ar = el.naturalWidth / el.naturalHeight
+            setAdjustable(ar < HERO_RATIO - 0.001)
+            setAdjustableX(ar > HERO_RATIO + 0.001)
+          }}
+          onError={() => setBroken(true)}
+          style={{ cursor: 'zoom-in', objectPosition: `${focusX}% ${focus}%` }}
+        />
+      )}
       {/* Encuadre vertical del hero: arriba = mostrar parte superior, abajo = inferior. Preview en vivo.
           Se desactiva si la imagen es más ancha que el hero (no hay recorte vertical que mover). */}
       <input

@@ -53,15 +53,22 @@ export const siteSettingsSchema = z.object({
   // Acepta número (5493411234567) o link (wa.me / wa.link). El helper buildWhatsappUrl normaliza.
   whatsapp_url: z.string().nullable().or(z.literal('')).transform(v => v || null),
   email: z.string().email().nullable().or(z.literal('')).transform(v => v || null),
-  hero_image: z.string().nullable(),
-  hero_focus: z.number().min(0).max(100),
-  hero_focus_x: z.number().min(0).max(100),
   instagram_url: z.string().url().nullable().or(z.literal('')).transform(v => v || null),
   behance_url: z.string().url().nullable().or(z.literal('')).transform(v => v || null),
   location: z.string().nullable().or(z.literal('')).transform(v => v || null),
 })
 
 export type SiteSettingsFormData = z.infer<typeof siteSettingsSchema>
+
+// Portada del home (se gestiona en /admin/inicio). Imagen o video + encuadre X/Y.
+export const heroSettingsSchema = z.object({
+  hero_image: z.string().nullable(),
+  hero_video: z.string().nullable(),
+  hero_focus: z.number().min(0).max(100),
+  hero_focus_x: z.number().min(0).max(100),
+})
+
+export type HeroSettingsFormData = z.infer<typeof heroSettingsSchema>
 
 // Posición explícita de una celda en la grilla (1-based). Opcional: ausente = auto-flow.
 const gridPosSchema = z.object({

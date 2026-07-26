@@ -47,6 +47,22 @@ export async function uploadRender(file: File, projectId: string): Promise<strin
   return path
 }
 
+// Video de portada: se sube crudo (image-compression rompe con video). Mismo bucket público.
+// ponytail: sin transcode ni límite duro — el admin avisa de usar un mp4 liviano.
+export async function uploadVideo(file: File, projectId: string): Promise<string> {
+  const supabase = createClient()
+  const ext = file.name.split('.').pop() ?? 'mp4'
+  const path = `${projectId}/${crypto.randomUUID()}.${ext}`
+
+  const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
+    cacheControl: '3600',
+    upsert: false,
+  })
+
+  if (error) throw new Error(`Error al subir video: ${error.message}`)
+  return path
+}
+
 export async function deleteRender(path: string): Promise<void> {
   const supabase = createClient()
   const { data, error } = await supabase.storage.from(BUCKET).remove([path])
