@@ -34,6 +34,8 @@
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
+  --site-border: rgba(0, 0, 0, 0.08);
+  --brand: #3532C5;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -503,7 +505,90 @@ body {
   --text-secondary: #9999A8;
   --accent: #3532C5;
   --accent-hover: #4A47D4;
+  --site-border: rgba(255, 255, 255, 0.1);
 }
+
+/* ── Sitio público ── */
+
+/* Transición de tema con reveal circular (View Transitions API) */
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 9999; }
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+@keyframes scroll-cue {
+  0% { transform: translateY(-6px); opacity: 0.2; }
+  50% { opacity: 1; }
+  100% { transform: translateY(10px); opacity: 0.2; }
+}
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.img-skeleton {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--surface) 0px, rgba(255, 255, 255, 0.08) 100px, var(--surface) 200px);
+  background-size: 800px 100%;
+  animation: shimmer 1.3s infinite linear;
+}
+
+/* Nav pública: logo por tema + estado sobre-hero (foto oscura ⇒ variante clara) */
+.site-nav { color: var(--text-primary); }
+.site-nav .logo-for-dark { opacity: 0; }
+.site-nav .logo-for-light { opacity: 1; }
+[data-theme="dark"] .site-nav .logo-for-dark { opacity: 1; }
+[data-theme="dark"] .site-nav .logo-for-light { opacity: 0; }
+.site-nav--overhero { color: #f0f0f0; }
+.site-nav--overhero .logo-for-dark { opacity: 1; }
+.site-nav--overhero .logo-for-light { opacity: 0; }
+.site-nav--scrolled {
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  border-bottom: 1px solid var(--site-border);
+  box-shadow: 0 1px 20px rgba(0, 0, 0, 0.12);
+  backdrop-filter: saturate(140%) blur(12px);
+}
+
+/* Logo del dev (footer): tinta en claro, blanco en oscuro */
+.gg-for-dark { opacity: 0; }
+.gg-for-light { opacity: 0.85; }
+[data-theme="dark"] .gg-for-dark { opacity: 0.85; }
+[data-theme="dark"] .gg-for-light { opacity: 0; }
+
+/* Cards de proyecto: B&N → color + zoom solo con hover real; touch siempre color */
+.project-card .card-render { transition: filter 400ms ease, transform 500ms ease, opacity 400ms ease; }
+@media (hover: hover) and (pointer: fine) {
+  .project-card .card-render { filter: grayscale(1); }
+  .project-card:hover .card-render { filter: none; transform: scale(1.05); }
+}
+.project-card__overlay { opacity: 0; transition: opacity 300ms ease; }
+@media (hover: hover) and (pointer: fine) {
+  .project-card:hover .project-card__overlay { opacity: 1; }
+}
+
+/* Botón outline que invierte al hover */
+.btn-invert {
+  border: 1px solid var(--text-primary);
+  color: var(--text-primary);
+  background: transparent;
+  transition: background 150ms, color 150ms;
+}
+.btn-invert:hover { background: var(--text-primary); color: var(--bg); }
+
+/* Grilla curada del home: tamaño por celda elegido en admin (home_grid). */
+.home-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-auto-rows: 90px; grid-auto-flow: dense; gap: 12px; }
+@media (min-width: 1080px) {
+  .home-grid { grid-template-columns: repeat(4, 1fr); grid-auto-rows: 130px; gap: 16px; }
+}
+.home-tile--sm   { grid-column: span 1; grid-row: span 2; }
+.home-tile--wide { grid-column: span 2; grid-row: span 2; }
+.home-tile--tall { grid-column: span 1; grid-row: span 4; }
+.home-tile--big  { grid-column: span 2; grid-row: span 4; }
 
 @layer base {
   * {

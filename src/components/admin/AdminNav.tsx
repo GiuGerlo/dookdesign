@@ -3,12 +3,13 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
-import { Layers, Tag, Settings, LogOut } from 'lucide-react'
+import { Home, Layers, Tag, Settings, LogOut } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 
 const links = [
+  { href: '/admin/inicio', label: 'Inicio', icon: Home },
   { href: '/admin/proyectos', label: 'Proyectos', icon: Layers },
   { href: '/admin/categorias', label: 'Categorías', icon: Tag },
   { href: '/admin/configuracion', label: 'Configuración', icon: Settings },

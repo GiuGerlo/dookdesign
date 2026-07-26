@@ -7,19 +7,19 @@
  * `rawWhatsapp` puede ser un número o una URL (wa.me / api.whatsapp.com): se extraen solo los dígitos.
  * Devuelve `null` si no hay número válido.
  */
-export function buildWhatsappUrl(rawWhatsapp: string | null | undefined, title: string): string | null {
+export function buildWhatsappUrl(rawWhatsapp: string | null | undefined, title?: string): string | null {
   if (!rawWhatsapp) return null
   const digits = rawWhatsapp.replace(/\D/g, '')
   if (!digits) return null
-  const text = encodeURIComponent(`Hola, me interesa el proyecto ${title}`)
-  return `https://wa.me/${digits}?text=${text}`
+  const message = title ? `Hola, me interesa el proyecto ${title}` : 'Hola, quiero hacer una consulta'
+  return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`
 }
 
 /**
  * Construye un `mailto:` con asunto pre-cargado. Devuelve `null` si no hay email.
  */
-export function buildMailto(email: string | null | undefined, title: string): string | null {
+export function buildMailto(email: string | null | undefined, title?: string): string | null {
   if (!email) return null
-  const subject = encodeURIComponent(`Consulta: ${title}`)
+  const subject = encodeURIComponent(title ? `Consulta: ${title}` : 'Consulta desde la web')
   return `mailto:${email}?subject=${subject}`
 }

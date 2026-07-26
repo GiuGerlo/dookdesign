@@ -1,8 +1,23 @@
 'use client'
 
+import imageCompression from 'browser-image-compression'
 import { createClient } from '@/lib/supabase/client'
 
 const BUCKET = 'renders'
+
+// Optimiza un render pesado en el navegador (web worker) antes de subirlo: reduce el lado más
+// largo a 3840px conservando la proporción (nunca agranda, nunca recorta) y lo pasa a WebP.
+// Un render de 8K/17MB queda en ~1MB sin que el cliente haga nada.
+export async function optimizeRender(file: File): Promise<File> {
+  const out = await imageCompression(file, {
+    maxWidthOrHeight: 3840,
+    fileType: 'image/webp',
+    initialQuality: 0.8,
+    useWebWorker: true,
+  })
+  const name = file.name.replace(/\.[^.]+$/, '') + '.webp'
+  return new File([out], name, { type: 'image/webp' })
+}
 
 export async function uploadRender(file: File, projectId: string): Promise<string> {
   const supabase = createClient()

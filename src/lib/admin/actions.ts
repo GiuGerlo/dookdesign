@@ -2,7 +2,8 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import type { ProjectFormData, CategoryFormData, SiteSettingsFormData } from './schemas'
+import { homeGridSchema } from './schemas'
+import type { ProjectFormData, CategoryFormData, SiteSettingsFormData, HomeGridItem } from './schemas'
 
 // --- Proyectos ---
 
@@ -70,6 +71,16 @@ export async function updateSiteSettings(data: SiteSettingsFormData) {
   const { data: existing } = await supabase.from('site_settings').select('id').single()
   if (!existing) throw new Error('No existe fila de site_settings')
   const { error } = await supabase.from('site_settings').update(data).eq('id', existing.id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/')
+}
+
+export async function updateHomeGrid(items: HomeGridItem[]) {
+  const parsed = homeGridSchema.parse(items)
+  const supabase = await createClient()
+  const { data: existing } = await supabase.from('site_settings').select('id').single()
+  if (!existing) throw new Error('No existe fila de site_settings')
+  const { error } = await supabase.from('site_settings').update({ home_grid: parsed }).eq('id', existing.id)
   if (error) throw new Error(error.message)
   revalidatePath('/')
 }

@@ -25,10 +25,10 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
       <head>
-        {/* Evita flash de tema incorrecto al cargar */}
+        {/* Evita flash de tema incorrecto al cargar. Default: oscuro. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{const t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark')}catch{}`,
+            __html: `try{const t=localStorage.getItem('theme');if(t!=='light')document.documentElement.setAttribute('data-theme','dark')}catch{}`,
           }}
         />
       </head>

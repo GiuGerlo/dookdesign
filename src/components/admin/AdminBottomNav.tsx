@@ -2,11 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Layers, Tag, Settings, LogOut } from 'lucide-react'
+import { Home, Layers, Tag, Settings, LogOut } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 
 const links = [
+  { href: '/admin/inicio', label: 'Inicio', icon: Home },
   { href: '/admin/proyectos', label: 'Proyectos', icon: Layers },
   { href: '/admin/categorias', label: 'Categ.', icon: Tag },
   { href: '/admin/configuracion', label: 'Config.', icon: Settings },

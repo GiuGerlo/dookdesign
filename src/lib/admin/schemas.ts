@@ -25,9 +25,26 @@ export const siteSettingsSchema = z.object({
   about_text: z.string(),
   whatsapp_url: z.string().url().nullable().or(z.literal('')).transform(v => v || null),
   email: z.string().email().nullable().or(z.literal('')).transform(v => v || null),
+  hero_image: z.string().nullable(),
+  instagram_url: z.string().url().nullable().or(z.literal('')).transform(v => v || null),
+  behance_url: z.string().url().nullable().or(z.literal('')).transform(v => v || null),
+  location: z.string().nullable().or(z.literal('')).transform(v => v || null),
 })
 
 export type SiteSettingsFormData = z.infer<typeof siteSettingsSchema>
+
+// Grilla curada del home: qué proyecto va, en qué orden y con qué tamaño.
+export const homeGridSchema = z
+  .array(
+    z.object({
+      project_id: z.string().uuid(),
+      size: z.enum(['sm', 'wide', 'tall', 'big']),
+    })
+  )
+  .max(12)
+
+export type HomeGridItem = z.infer<typeof homeGridSchema>[number]
+export type HomeGridSize = HomeGridItem['size']
 
 export function slugify(text: string): string {
   return text

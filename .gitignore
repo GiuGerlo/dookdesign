@@ -5,6 +5,7 @@
 # Skills instaladas (reproducibles desde skills-lock.json)
 .agents/
 .claude/skills/
+.design/
 
 # Env / secretos
 .env

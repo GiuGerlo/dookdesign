@@ -74,22 +74,37 @@ export type Database = {
       site_settings: {
         Row: {
           about_text: string
+          behance_url: string | null
           email: string | null
+          hero_image: string | null
+          home_grid: Json
           id: string
+          instagram_url: string | null
+          location: string | null
           updated_at: string
           whatsapp_url: string | null
         }
         Insert: {
           about_text?: string
+          behance_url?: string | null
           email?: string | null
+          hero_image?: string | null
+          home_grid?: Json
           id?: string
+          instagram_url?: string | null
+          location?: string | null
           updated_at?: string
           whatsapp_url?: string | null
         }
         Update: {
           about_text?: string
+          behance_url?: string | null
           email?: string | null
+          hero_image?: string | null
+          home_grid?: Json
           id?: string
+          instagram_url?: string | null
+          location?: string | null
           updated_at?: string
           whatsapp_url?: string | null
         }

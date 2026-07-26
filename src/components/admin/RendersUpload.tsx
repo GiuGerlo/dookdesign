@@ -17,13 +17,12 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import imageCompression from 'browser-image-compression'
 import { Loader2 } from 'lucide-react'
 import { sileo } from 'sileo'
 import Lightbox from 'yet-another-react-lightbox'
 import Zoom from 'yet-another-react-lightbox/plugins/zoom'
 import 'yet-another-react-lightbox/styles.css'
-import { uploadRender, deleteRender, getRenderUrl } from '@/lib/admin/storage'
+import { uploadRender, deleteRender, getRenderUrl, optimizeRender } from '@/lib/admin/storage'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,20 +34,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-
-// Optimiza un render pesado en el navegador (web worker) antes de subirlo: reduce el lado más
-// largo a 3840px conservando la proporción (nunca agranda, nunca recorta) y lo pasa a WebP.
-// Un render de 8K/17MB queda en ~1MB sin que el cliente haga nada.
-async function optimizeRender(file: File): Promise<File> {
-  const out = await imageCompression(file, {
-    maxWidthOrHeight: 3840,
-    fileType: 'image/webp',
-    initialQuality: 0.8,
-    useWebWorker: true,
-  })
-  const name = file.name.replace(/\.[^.]+$/, '') + '.webp'
-  return new File([out], name, { type: 'image/webp' })
-}
 
 interface RenderThumbProps {
   path: string
