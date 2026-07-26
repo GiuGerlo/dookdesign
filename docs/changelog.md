@@ -15,6 +15,18 @@ Historial por fase. Formato en `.claude/rules/docs-workflow.md`.
 **Migración**: nada / pasos.
 -->
 
+## [2026-07-26] hero-2-imagenes — Portada con imagen separada desktop/móvil (sin video)
+
+**Resumen**: La portada del home pasa a tener dos imágenes independientes (una ancha para desktop, una angosta para móvil), cada una con su propio encuadre X/Y. Se elimina el soporte de video.
+
+**Cambios**:
+- **DB**: `site_settings` + `hero_image_mobile`, `hero_focus_mobile`, `hero_focus_x_mobile`. Migración `0019` (aplicada, aditiva). `hero_video` queda como columna muerta (el código ya no la usa; dropear a mano cuando se confirme).
+- **Admin** (`HeroSettingsForm`): dos slots (desktop + móvil), cada uno con dropzone, preview con el aspecto de su dispositivo (desktop = viewport, móvil ≈ 0.7) y sliders X/Y. Se quitó todo lo de video (`uploadVideo` borrado de storage).
+- **Público** (`HomeHero`): `<picture>` con `<source media="(max-width:767px)">` → baja solo la imagen del dispositivo; encuadre por dispositivo vía `<style>` con media query. Si no hay imagen móvil, usa la de desktop.
+
+**Breaking**: se quita el video de portada (si alguien había subido uno, deja de mostrarse).
+**Migración**: `0019` (aplicada). `hero_video` no se dropeó (requiere OK explícito).
+
 ## [2026-07-26] fase-6 — Post-launch: keep-alive, observabilidad y hardening
 
 **Resumen**: Cron diario que mantiene despierto Supabase (evita la pausa por inactividad del free tier), Speed Insights, y se sacó el OG dinámico por producto (nunca funcionó fiable) dejando el OG estático del sitio.

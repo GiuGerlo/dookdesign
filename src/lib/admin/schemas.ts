@@ -60,12 +60,14 @@ export const siteSettingsSchema = z.object({
 
 export type SiteSettingsFormData = z.infer<typeof siteSettingsSchema>
 
-// Portada del home (se gestiona en /admin/inicio). Imagen o video + encuadre X/Y.
+// Portada del home (se gestiona en /admin/inicio). Dos imágenes: desktop + móvil, cada una con su encuadre X/Y.
 export const heroSettingsSchema = z.object({
   hero_image: z.string().nullable(),
-  hero_video: z.string().nullable(),
+  hero_image_mobile: z.string().nullable(),
   hero_focus: z.number().min(0).max(100),
   hero_focus_x: z.number().min(0).max(100),
+  hero_focus_mobile: z.number().min(0).max(100),
+  hero_focus_x_mobile: z.number().min(0).max(100),
 })
 
 export type HeroSettingsFormData = z.infer<typeof heroSettingsSchema>

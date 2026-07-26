@@ -89,9 +89,11 @@ export type Database = {
           behance_url: string | null
           email: string | null
           hero_focus: number
+          hero_focus_mobile: number
           hero_focus_x: number
+          hero_focus_x_mobile: number
           hero_image: string | null
-          hero_video: string | null
+          hero_image_mobile: string | null
           home_grid: Json
           id: string
           instagram_url: string | null
@@ -106,9 +108,11 @@ export type Database = {
           behance_url?: string | null
           email?: string | null
           hero_focus?: number
+          hero_focus_mobile?: number
           hero_focus_x?: number
+          hero_focus_x_mobile?: number
           hero_image?: string | null
-          hero_video?: string | null
+          hero_image_mobile?: string | null
           home_grid?: Json
           id?: string
           instagram_url?: string | null
@@ -123,9 +127,11 @@ export type Database = {
           behance_url?: string | null
           email?: string | null
           hero_focus?: number
+          hero_focus_mobile?: number
           hero_focus_x?: number
+          hero_focus_x_mobile?: number
           hero_image?: string | null
-          hero_video?: string | null
+          hero_image_mobile?: string | null
           home_grid?: Json
           id?: string
           instagram_url?: string | null

@@ -3,37 +3,45 @@ import { ScrollCue } from '@/components/site/ScrollCue'
 
 interface HomeHeroProps {
   imageUrl: string | null
-  videoUrl?: string | null
+  mobileImageUrl?: string | null
   focusY?: number
   focusX?: number
+  mobileFocusY?: number
+  mobileFocusX?: number
 }
 
-// Hero fullscreen del home: portada elegida en admin (imagen o video) + logo DK superpuesto.
-export function HomeHero({ imageUrl, videoUrl, focusY = 50, focusX = 50 }: HomeHeroProps) {
+// Hero fullscreen del home: portada elegida en admin (imagen desktop + imagen móvil) + logo DK.
+// <picture> baja SOLO la imagen que corresponde al dispositivo (móvil <768px). El encuadre por
+// dispositivo va en un <style> con media query (no se puede por-fuente con object-position inline).
+export function HomeHero({
+  imageUrl,
+  mobileImageUrl,
+  focusY = 50,
+  focusX = 50,
+  mobileFocusY = 50,
+  mobileFocusX = 50,
+}: HomeHeroProps) {
+  const desktopSrc = imageUrl ?? mobileImageUrl ?? null
   return (
     <header className="relative h-[560px] overflow-hidden md:h-svh">
-      {videoUrl ? (
-        <video
-          src={videoUrl}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 h-full w-full object-cover"
-          style={{ objectPosition: `${focusX}% ${focusY}%` }}
-        />
-      ) : imageUrl ? (
-        <Image
-          src={imageUrl}
-          alt="Render destacado de DooK Design"
-          fill
-          sizes="100vw"
-          priority
-          // ponytail: bucket tal cual — Next re-encodaba a q75 y el hero se veía borroso.
-          unoptimized
-          className="object-cover"
-          style={{ objectPosition: `${focusX}% ${focusY}%` }}
-        />
+      {desktopSrc ? (
+        <>
+          <picture>
+            {mobileImageUrl && <source media="(max-width: 767px)" srcSet={mobileImageUrl} />}
+            {/* ponytail: <img> crudo (no next/image) — el hero se sirve del bucket tal cual, sin re-encode. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={desktopSrc}
+              alt="Render destacado de DooK Design"
+              fetchPriority="high"
+              className="home-hero__cover absolute inset-0 h-full w-full object-cover"
+            />
+          </picture>
+          <style>{`
+            .home-hero__cover{object-position:${focusX}% ${focusY}%}
+            @media (max-width:767px){.home-hero__cover{object-position:${mobileFocusX}% ${mobileFocusY}%}}
+          `}</style>
+        </>
       ) : (
         <div className="absolute inset-0 bg-(--surface)" aria-hidden />
       )}

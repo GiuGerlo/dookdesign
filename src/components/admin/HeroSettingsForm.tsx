@@ -8,22 +8,140 @@ import { Loader2 } from 'lucide-react'
 import { sileo } from 'sileo'
 import { heroSettingsSchema, type HeroSettingsFormData } from '@/lib/admin/schemas'
 import { updateHeroSettings } from '@/lib/admin/actions'
-import { uploadRender, uploadVideo, deleteRender, getRenderUrl, optimizeRender } from '@/lib/admin/storage'
+import { uploadRender, deleteRender, getRenderUrl, optimizeRender } from '@/lib/admin/storage'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Tables } from '@/types/database'
 
-// Video de portada: se sube crudo, sin comprimir. Aviso al usuario para que use algo liviano.
-const MAX_VIDEO_MB = 20
+// Slot de una imagen de portada (desktop o móvil): dropzone + preview con el aspecto del dispositivo
+// + sliders de encuadre X/Y. Cada eje se activa solo si hay recorte en esa dirección.
+function HeroImageSlot({
+  title,
+  hint,
+  previewAr,
+  imagePath,
+  focus,
+  focusX,
+  onImage,
+  onFocus,
+  onFocusX,
+}: {
+  title: string
+  hint: string
+  previewAr: number
+  imagePath: string | null
+  focus: number
+  focusX: number
+  onImage: (path: string | null) => void
+  onFocus: (v: number) => void
+  onFocusX: (v: number) => void
+}) {
+  const [uploading, setUploading] = useState(false)
+  const [adjustableY, setAdjustableY] = useState<boolean | null>(null)
+  const [adjustableX, setAdjustableX] = useState<boolean | null>(null)
+  const imageUrl = imagePath ? getRenderUrl(imagePath) : null
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: { 'image/*': [] },
+    multiple: false,
+    disabled: uploading,
+    onDrop: async ([file]) => {
+      if (!file) return
+      setUploading(true)
+      try {
+        const prev = imagePath
+        const path = await uploadRender(await optimizeRender(file), 'site')
+        if (prev) await deleteRender(prev).catch(() => {})
+        setAdjustableY(null)
+        setAdjustableX(null)
+        onImage(path)
+        sileo.success({ title: 'Imagen subida — guardá para aplicar' })
+      } catch {
+        sileo.error({ title: 'No se pudo subir la imagen' })
+      } finally {
+        setUploading(false)
+      }
+    },
+  })
+
+  return (
+    <div className="space-y-3">
+      <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">{title}</p>
+      {imageUrl && (
+        <div
+          className="relative mx-auto overflow-hidden rounded-md bg-black/30"
+          style={{ aspectRatio: previewAr, maxWidth: previewAr < 1 ? 240 : undefined }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imageUrl}
+            alt={title}
+            className="h-full w-full object-cover"
+            onLoad={e => {
+              const ar = e.currentTarget.naturalWidth / e.currentTarget.naturalHeight
+              setAdjustableY(ar < previewAr - 0.02)
+              setAdjustableX(ar > previewAr + 0.02)
+            }}
+            style={{ objectPosition: `${focusX}% ${focus}%` }}
+          />
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={focus}
+            disabled={adjustableY === false}
+            onChange={e => onFocus(Number(e.target.value))}
+            aria-label="Encuadre vertical"
+            title={adjustableY === false ? 'Sin recorte vertical para ajustar' : 'Encuadre (arriba ↔ abajo)'}
+            className="render-thumb__focus"
+            style={{ writingMode: 'vertical-lr', opacity: 1 }}
+          />
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={focusX}
+            disabled={adjustableX === false}
+            onChange={e => onFocusX(Number(e.target.value))}
+            aria-label="Encuadre horizontal"
+            title={adjustableX === false ? 'Sin recorte horizontal para ajustar' : 'Encuadre (izquierda ↔ derecha)'}
+            className="render-thumb__focus render-thumb__focus--x"
+            style={{ opacity: 1 }}
+          />
+          {(adjustableY === false || adjustableX === false) && (
+            <span className="render-thumb__badge">
+              {adjustableY === false ? 'sin recorte vertical' : 'sin recorte horizontal'}
+            </span>
+          )}
+        </div>
+      )}
+      <div
+        {...getRootProps()}
+        className={`renders-dropzone${isDragActive ? ' renders-dropzone--active' : ''}${uploading ? ' opacity-60 pointer-events-none' : ''}`}
+      >
+        <input {...getInputProps()} />
+        {uploading ? (
+          <p className="flex items-center justify-center gap-2">
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            Subiendo…
+          </p>
+        ) : (
+          <p>{imagePath ? 'Arrastrá una imagen para reemplazar' : 'Arrastrá la imagen o hacé clic'}</p>
+        )}
+      </div>
+      <p className="text-xs text-muted-foreground">{hint}</p>
+    </div>
+  )
+}
+
+// Aspecto representativo del hero en móvil (h-[560px] a ~390px de ancho ≈ 0.7).
+const MOBILE_PREVIEW_AR = 0.7
 
 export function HeroSettingsForm({ settings }: { settings: Tables<'site_settings'> }) {
-  const [uploading, setUploading] = useState(false)
-  // Aspecto real de la ventana → el preview espeja el recorte que verá el visitante en este dispositivo.
-  // ponytail: el recorte móvil real difiere (hero de alto fijo 560px); el preview refleja el viewport actual.
-  const [previewAr, setPreviewAr] = useState(16 / 9)
-
+  // Preview desktop = aspecto real de la ventana (el hero desktop es h-svh = pantalla completa).
+  const [desktopAr, setDesktopAr] = useState(16 / 9)
   useEffect(() => {
-    const update = () => setPreviewAr(window.innerWidth / window.innerHeight)
+    const update = () => setDesktopAr(window.innerWidth / window.innerHeight)
     update()
     window.addEventListener('resize', update)
     return () => window.removeEventListener('resize', update)
@@ -38,59 +156,11 @@ export function HeroSettingsForm({ settings }: { settings: Tables<'site_settings
     resolver: zodResolver(heroSettingsSchema),
     defaultValues: {
       hero_image: settings.hero_image,
-      hero_video: settings.hero_video,
+      hero_image_mobile: settings.hero_image_mobile,
       hero_focus: settings.hero_focus ?? 50,
       hero_focus_x: settings.hero_focus_x ?? 50,
-    },
-  })
-
-  const heroImage = watch('hero_image')
-  const heroVideo = watch('hero_video')
-  const heroFocus = watch('hero_focus')
-  const heroFocusX = watch('hero_focus_x')
-  const mediaPath = heroVideo || heroImage
-  const mediaUrl = mediaPath ? getRenderUrl(mediaPath) : null
-
-  // null = sin cargar; false = media más ancho que el hero → sin recorte en ese eje.
-  const [adjustableY, setAdjustableY] = useState<boolean | null>(null)
-  const [adjustableX, setAdjustableX] = useState<boolean | null>(null)
-
-  // Compara el aspecto del media contra el del preview (= viewport) para saber qué eje recorta.
-  function detectAdjustable(ar: number) {
-    setAdjustableY(ar < previewAr - 0.02)
-    setAdjustableX(ar > previewAr + 0.02)
-  }
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: { 'image/*': [], 'video/mp4': [] },
-    multiple: false,
-    disabled: uploading,
-    onDrop: async ([file]) => {
-      if (!file) return
-      const isVideo = file.type.startsWith('video')
-      if (isVideo && file.size > MAX_VIDEO_MB * 1024 * 1024) {
-        sileo.error({ title: `El video supera ${MAX_VIDEO_MB}MB — usá uno más liviano` })
-        return
-      }
-      setUploading(true)
-      try {
-        const prev = mediaPath
-        const path = isVideo
-          ? await uploadVideo(file, 'site')
-          : await uploadRender(await optimizeRender(file), 'site')
-        // Borrar la portada anterior recién después de subir la nueva (si falla, no perdemos nada).
-        if (prev) await deleteRender(prev).catch(() => {})
-        // Una portada activa a la vez: seteo la nueva, limpio el otro tipo.
-        setValue('hero_image', isVideo ? null : path, { shouldDirty: true })
-        setValue('hero_video', isVideo ? path : null, { shouldDirty: true })
-        setAdjustableY(null)
-        setAdjustableX(null)
-        sileo.success({ title: 'Portada subida — guardá para aplicar' })
-      } catch {
-        sileo.error({ title: 'No se pudo subir la portada' })
-      } finally {
-        setUploading(false)
-      }
+      hero_focus_mobile: settings.hero_focus_mobile ?? 50,
+      hero_focus_x_mobile: settings.hero_focus_x_mobile ?? 50,
     },
   })
 
@@ -110,85 +180,33 @@ export function HeroSettingsForm({ settings }: { settings: Tables<'site_settings
       <Card className="bg-card border-white/[0.08]">
         <CardHeader className="pb-4 pt-5 flex-row items-center justify-between">
           <CardTitle className={labelClass}>Portada del home</CardTitle>
-          <Button type="submit" size="sm" disabled={isSubmitting || uploading}>
+          <Button type="submit" size="sm" disabled={isSubmitting}>
             {isSubmitting ? 'Guardando…' : 'Guardar portada'}
           </Button>
         </CardHeader>
-        <CardContent className="space-y-3">
-          {mediaUrl && (
-            <div
-              className="relative overflow-hidden rounded-md bg-black/30"
-              style={{ aspectRatio: previewAr }}
-            >
-              {heroVideo ? (
-                <video
-                  src={mediaUrl}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="h-full w-full object-cover"
-                  onLoadedMetadata={e => detectAdjustable(e.currentTarget.videoWidth / e.currentTarget.videoHeight)}
-                  style={{ objectPosition: `${heroFocusX}% ${heroFocus}%` }}
-                />
-              ) : (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={mediaUrl}
-                  alt="Portada del home"
-                  className="h-full w-full object-cover"
-                  onLoad={e => detectAdjustable(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight)}
-                  style={{ objectPosition: `${heroFocusX}% ${heroFocus}%` }}
-                />
-              )}
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={heroFocus}
-                disabled={adjustableY === false}
-                onChange={e => setValue('hero_focus', Number(e.target.value), { shouldDirty: true })}
-                aria-label="Encuadre vertical de la portada"
-                title={adjustableY === false ? 'Sin recorte vertical para ajustar' : 'Encuadre del hero (arriba ↔ abajo)'}
-                className="render-thumb__focus"
-                style={{ writingMode: 'vertical-lr', opacity: 1 }}
-              />
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={heroFocusX}
-                disabled={adjustableX === false}
-                onChange={e => setValue('hero_focus_x', Number(e.target.value), { shouldDirty: true })}
-                aria-label="Encuadre horizontal de la portada"
-                title={adjustableX === false ? 'Sin recorte horizontal para ajustar' : 'Encuadre del hero (izquierda ↔ derecha)'}
-                className="render-thumb__focus render-thumb__focus--x"
-                style={{ opacity: 1 }}
-              />
-              {(adjustableY === false || adjustableX === false) && (
-                <span className="render-thumb__badge">
-                  {adjustableY === false ? 'sin recorte vertical' : 'sin recorte horizontal'}
-                </span>
-              )}
-            </div>
-          )}
-          <div
-            {...getRootProps()}
-            className={`renders-dropzone${isDragActive ? ' renders-dropzone--active' : ''}${uploading ? ' opacity-60 pointer-events-none' : ''}`}
-          >
-            <input {...getInputProps()} />
-            {uploading ? (
-              <p className="flex items-center justify-center gap-2">
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                Subiendo…
-              </p>
-            ) : (
-              <p>{mediaPath ? 'Arrastrá una imagen o video para reemplazar la portada' : 'Arrastrá la imagen o video de portada del home o hacé clic'}</p>
-            )}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Se muestra a pantalla completa en el inicio. Imagen (se optimiza sola) o video mp4 liviano (ideal &lt;{MAX_VIDEO_MB}MB, reproduce en loop y sin sonido). El preview de arriba muestra el recorte real en este dispositivo; ajustá el encuadre con los deslizadores.
-          </p>
+        <CardContent className="grid gap-6 md:grid-cols-2">
+          <HeroImageSlot
+            title="Imagen desktop (ancha)"
+            hint="Se muestra a pantalla completa en pantallas grandes. Ideal horizontal, alta resolución."
+            previewAr={desktopAr}
+            imagePath={watch('hero_image')}
+            focus={watch('hero_focus')}
+            focusX={watch('hero_focus_x')}
+            onImage={p => setValue('hero_image', p, { shouldDirty: true })}
+            onFocus={v => setValue('hero_focus', v, { shouldDirty: true })}
+            onFocusX={v => setValue('hero_focus_x', v, { shouldDirty: true })}
+          />
+          <HeroImageSlot
+            title="Imagen móvil (angosta)"
+            hint="Se muestra en celulares. Ideal más vertical/cuadrada. Si no cargás una, se usa la de desktop."
+            previewAr={MOBILE_PREVIEW_AR}
+            imagePath={watch('hero_image_mobile')}
+            focus={watch('hero_focus_mobile')}
+            focusX={watch('hero_focus_x_mobile')}
+            onImage={p => setValue('hero_image_mobile', p, { shouldDirty: true })}
+            onFocus={v => setValue('hero_focus_mobile', v, { shouldDirty: true })}
+            onFocusX={v => setValue('hero_focus_x_mobile', v, { shouldDirty: true })}
+          />
         </CardContent>
       </Card>
     </form>
