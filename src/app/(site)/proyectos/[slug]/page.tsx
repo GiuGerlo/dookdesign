@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { MessageCircle, Mail } from 'lucide-react'
 import { getProjectBySlug, getPublishedProjects, getCategories, getSiteSettings } from '@/lib/projects/queries'
-import { getPublicRenderUrl, getOgImageUrl } from '@/lib/site/images'
+import { getPublicRenderUrl } from '@/lib/site/images'
 import { buildWhatsappUrl, buildEmailUrl } from '@/lib/site/contact'
 import { SiteNav } from '@/components/site/SiteNav'
 import { SiteFooter } from '@/components/site/SiteFooter'
@@ -25,11 +25,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const description =
     project.description?.slice(0, 155) || `${project.title}, diseño industrial de Agustín Cavallera.`
   const canonical = `/proyectos/${slug}`
-  // OG = render principal recortado a 1200×630 vía proxy weserv (preview grande en redes).
-  // Fallback al OG del sitio si el proyecto no tiene renders.
-  const ogImage = project.renders[0]
-    ? { url: getOgImageUrl(project.renders[0]), width: 1200, height: 630, alt: `${project.title} — render` }
-    : { url: '/og-home.png', width: 1200, height: 630, alt: 'DooK Design' }
+  // OG estático del sitio para todos los productos: el OG dinámico por render no funcionaba fiable.
+  const ogImage = { url: '/og-home.png', width: 1200, height: 630, alt: `${project.title} — DooK Design` }
 
   return {
     title: project.title,

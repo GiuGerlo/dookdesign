@@ -17,12 +17,12 @@ Historial por fase. Formato en `.claude/rules/docs-workflow.md`.
 
 ## [2026-07-26] fase-6 — Post-launch: keep-alive, observabilidad y hardening
 
-**Resumen**: Cron diario que mantiene despierto Supabase (evita la pausa por inactividad del free tier), Speed Insights, y fix del OG de producto migrando de sharp a un proxy weserv.
+**Resumen**: Cron diario que mantiene despierto Supabase (evita la pausa por inactividad del free tier), Speed Insights, y se sacó el OG dinámico por producto (nunca funcionó fiable) dejando el OG estático del sitio.
 
 **Cambios**:
 - **Keep-alive**: ruta `src/app/api/keep-alive/route.ts` (query trivial a `site_settings`, opcional `CRON_SECRET`) + `vercel.json` con cron diario `0 6 * * *`. Cualquier request resetea el timer de pausa de 7 días.
 - **Speed Insights**: `@vercel/speed-insights` + `<SpeedInsights/>` en `layout.tsx` (junto a Analytics). CSP no requiere cambios (mismo origen `/_vercel`).
-- **OG de producto (fix)**: helper `getOgImageUrl` en `lib/site/images.ts` que recorta el render a 1200×630 vía `images.weserv.nl`. Se borró la ruta `/proyectos/[slug]/og` (sharp) y **se eliminó `sharp`** de deps + su workaround de libvips en `next.config.ts`.
+- **OG de producto eliminado**: se borró la ruta `/proyectos/[slug]/og` (sharp, rota en Vercel), se probó un proxy weserv que tampoco convenció, y finalmente **todos los productos usan el OG estático `/og-home.png`**. Se quitó `sharp` de deps + su workaround de libvips en `next.config.ts`.
 - **Dependabot**: `.github/dependabot.yml` (npm semanal, PRs agrupados minor/patch).
 - **Scripts**: `pnpm typecheck` (`tsc --noEmit`). Lint pospuesto: `eslint-config-next` 16 arrastra un resolver nativo (`unrs-resolver`) que choca con pnpm 11.
 
