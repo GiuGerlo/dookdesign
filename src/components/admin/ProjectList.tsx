@@ -18,7 +18,7 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, Pencil, Trash2, Plus, Star, Eye, EyeOff } from 'lucide-react'
+import { GripVertical, Pencil, Trash2, Plus, Star, Eye, EyeOff, ExternalLink } from 'lucide-react'
 import { sileo } from 'sileo'
 import { deleteProject, reorderProjects } from '@/lib/admin/actions'
 import { getRenderUrl } from '@/lib/admin/storage'
@@ -104,6 +104,25 @@ function ProjectRow({ project, onDelete }: { project: Project; onDelete: (id: st
       </div>
 
       <div className="flex items-center gap-0.5 shrink-0">
+        {project.published && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            nativeButton={false}
+            render={
+              <Link
+                href={`/proyectos/${project.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Ver detalle público"
+                title="Ver detalle"
+              />
+            }
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="icon"

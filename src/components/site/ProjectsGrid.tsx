@@ -138,7 +138,7 @@ export function ProjectsGrid({ projects, categories }: ProjectsGridProps) {
                     </span>
                   </span>
                   <span className="mt-4 flex items-baseline justify-between gap-3">
-                    <span className="text-lg font-semibold tracking-[-0.01em] text-(--brand)">{p.title}</span>
+                    <span className="text-lg font-semibold tracking-[-0.01em] text-(--brand-ink)">{p.title}</span>
                     <span className="text-xs tabular-nums tracking-[0.04em] text-(--text-secondary)">{p.year}</span>
                   </span>
                   {p.categoryName && (

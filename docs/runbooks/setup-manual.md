@@ -26,25 +26,25 @@
 ## 3. Vercel (deploy) — misma cuenta que giulianogerlo, free
 
 - [X] https://vercel.com → Add New → Project → importar el repo `dookdesign`. Framework: **Next.js** (autodetecta).
-- [ ] En el import, sección **Environment Variables**, cargar (ver paso 4).
-- [ ] Deploy. Queda en `dookdesign.vercel.app` (gratis).
+- [x] En el import, sección **Environment Variables**, cargar (ver paso 4).
+- [x] Deploy. Queda en `dookdesign.vercel.app` (gratis).
 
 ## 4. Variables de entorno
 
 Copiar `.env.example` → `.env.local` y rellenar con las claves de Supabase (paso 1):
 
-- [ ] `NEXT_PUBLIC_SUPABASE_URL` = Project URL
-- [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY` = anon public key
-- [ ] `SUPABASE_SERVICE_ROLE_KEY` = service_role key (⚠️ NUNCA al cliente, solo server)
+- [x] `NEXT_PUBLIC_SUPABASE_URL` = Project URL
+- [x] `NEXT_PUBLIC_SUPABASE_ANON_KEY` = anon public key
+- [x] `SUPABASE_SERVICE_ROLE_KEY` = service_role key (⚠️ NUNCA al cliente, solo server)
 
 Las mismas tres van cargadas también en **Vercel → Project → Settings → Environment Variables** (Production + Preview).
 
-- [ ] `.env.local` cargado local.
-- [ ] Las 3 vars cargadas en Vercel.
+- [x] `.env.local` cargado local.
+- [x] Las 3 vars cargadas en Vercel.
 
 ## 5. Supabase MCP (opcional, para que el agente maneje el schema)
 
-- [ ] Instalar el Supabase MCP (lo ofreciste). Cuando lo instales se crea/edita `.mcp.json` en el proyecto. Sirve para que el agente cree tablas y consulte la DB directo.
+- [x] Instalar el Supabase MCP (lo ofreciste). Cuando lo instales se crea/edita `.mcp.json` en el proyecto. Sirve para que el agente cree tablas y consulte la DB directo.
 
 ## 6. Dominio (SOLO al lanzar, no ahora)
 

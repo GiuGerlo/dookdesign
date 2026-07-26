@@ -9,6 +9,7 @@ import { sileo } from 'sileo'
 import { projectSchema, type ProjectFormData, slugify } from '@/lib/admin/schemas'
 import { createProject, updateProject } from '@/lib/admin/actions'
 import { RendersUpload } from './RendersUpload'
+import { EnvironmentRendersUpload } from './EnvironmentRendersUpload'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
@@ -58,6 +59,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
           featured: project.featured,
           published: project.published,
           renders: project.renders,
+          environment_renders: project.environment_renders,
         }
       : {
           title: '',
@@ -69,6 +71,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
           featured: false,
           published: true,
           renders: [],
+          environment_renders: [],
         },
   })
 
@@ -248,6 +251,27 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
             control={control}
             render={({ field }) => (
               <RendersUpload
+                projectId={projectId}
+                value={field.value}
+                onChange={field.onChange}
+                onUploadingChange={setIsUploading}
+              />
+            )}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Renders de entorno */}
+      <Card className="bg-card border-white/[0.08]">
+        <CardHeader className="pb-4 pt-5">
+          <CardTitle className={labelClass}>Renders de entorno</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Controller
+            name="environment_renders"
+            control={control}
+            render={({ field }) => (
+              <EnvironmentRendersUpload
                 projectId={projectId}
                 value={field.value}
                 onChange={field.onChange}

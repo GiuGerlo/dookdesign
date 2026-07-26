@@ -36,6 +36,8 @@
   --radius: 0.625rem;
   --site-border: rgba(0, 0, 0, 0.08);
   --brand: #3532C5;
+  /* Azul de marca como TEXTO. En claro = --brand; en dark se aclara para AA (ver [data-theme="dark"]). */
+  --brand-ink: #3532C5;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -506,6 +508,8 @@ body {
   --accent: #3532C5;
   --accent-hover: #4A47D4;
   --site-border: rgba(255, 255, 255, 0.1);
+  /* Índigo vivo (más nítido que un lavanda pálido) que igual destaca sobre --bg #323238. */
+  --brand-ink: #6E6BFF;
 }
 
 /* ── Sitio público ── */

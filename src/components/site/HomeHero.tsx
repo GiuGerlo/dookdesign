@@ -12,7 +12,7 @@ export function HomeHero({ imageUrl }: HomeHeroProps) {
       {imageUrl ? (
         <Image
           src={imageUrl}
-          alt="Render destacado de dookdesign"
+          alt="Render destacado de DooK Design"
           fill
           sizes="100vw"
           priority
@@ -31,15 +31,15 @@ export function HomeHero({ imageUrl }: HomeHeroProps) {
         <div className="relative h-[clamp(120px,20vw,240px)] w-[clamp(120px,20vw,240px)] motion-safe:animate-[hero-fade-up_800ms_ease-out]">
           <Image
             src="/logo-dk.png"
-            alt="DK — dookdesign"
+            alt="DK — DooK Design"
             fill
             sizes="240px"
             priority
             className="object-contain object-left-bottom brightness-0 invert"
           />
         </div>
-        <p className="pb-3 text-[13px] font-medium tracking-[0.08em] text-[#E6E6E6] motion-safe:animate-[hero-fade-up_800ms_ease-out_300ms_both]">
-          DISEÑO&nbsp;INDUSTRIAL
+        <p className="whitespace-nowrap pb-3 text-[13px] font-medium tracking-[0.08em] text-[#E6E6E6] motion-safe:animate-[hero-fade-up_800ms_ease-out_300ms_both]">
+          DISEÑO&nbsp;ARGENTINO
         </p>
       </div>
       <ScrollCue />

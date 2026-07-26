@@ -15,6 +15,18 @@ Historial por fase. Formato en `.claude/rules/docs-workflow.md`.
 **Migración**: nada / pasos.
 -->
 
+## [2026-07-26] ajustes — Renders de entorno + fixes visuales
+
+**Resumen**: Feedback post-deploy con Agustín: nuevo tipo de imagen "renders de entorno", tagline del logo y legibilidad del azul de marca en modo oscuro.
+
+**Cambios**:
+- **Renders de entorno** (feature): nuevo campo `projects.environment_renders` (`text[]`, máx 3). Imágenes de contexto webp que NO van a la galería, NO se amplían (sin lightbox/zoom) y NO se degradan (solo conversión a webp, `initialQuality 0.9`, `maxWidthOrHeight 2560` en `optimizeEnvironmentRender`). Se cargan en el admin con `EnvironmentRendersUpload` (dropzone + borrar, sin reorden, cupo 3) dentro de `ProjectForm`. En el detalle se muestran como fila fija recortada (`cover`) full-width **debajo del hero**, vía `ProjectEnvironmentRow`. Reutiliza bucket `renders`, storage helpers y RLS existentes.
+- **Tagline del hero**: "DISEÑO INDUSTRIAL" → "DISEÑO ARGENTINO", con `whitespace-nowrap` para una sola línea (`HomeHero`).
+- **Azul de marca legible en dark**: nuevo token `--brand-ink` (en claro = `#3532C5`, sin cambios; en `[data-theme="dark"]` = `#9C99F8`, tinte más claro para AA). Los títulos de proyecto y hovers de nav/footer pasan a `--brand-ink`; los pills de filtro siguen con `--brand` de fondo (texto blanco intacto).
+
+**Breaking**: nada.
+**Migración**: `0012_environment_renders.sql` (aplicada en Supabase).
+
 ## [2026-07-25] fase-5 — Páginas públicas (home + listado + detalle)
 
 **Resumen**: Se cablearon las tres páginas públicas con data real de Supabase, portando los diseños de claude design a componentes Next.js 16 + Tailwind v4. Cierra la Fase 5.

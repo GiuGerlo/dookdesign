@@ -20,6 +20,7 @@ export type Database = {
           category_id: string | null
           created_at: string
           description: string
+          environment_renders: string[]
           featured: boolean
           id: string
           materials: string[]
@@ -35,6 +36,7 @@ export type Database = {
           category_id?: string | null
           created_at?: string
           description?: string
+          environment_renders?: string[]
           featured?: boolean
           id?: string
           materials?: string[]
@@ -50,6 +52,7 @@ export type Database = {
           category_id?: string | null
           created_at?: string
           description?: string
+          environment_renders?: string[]
           featured?: boolean
           id?: string
           materials?: string[]

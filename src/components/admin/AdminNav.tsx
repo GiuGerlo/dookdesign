@@ -30,7 +30,7 @@ export function AdminNav() {
       <div className="px-5 py-6 flex justify-center">
         <Image
           src="/logo-dook.png"
-          alt="dookdesign"
+          alt="DooK Design"
           width={140}
           height={34}
           className="h-9 w-auto"

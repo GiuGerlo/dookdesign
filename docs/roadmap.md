@@ -96,3 +96,13 @@ El panel admin está funcional y en producción. Rutas bajo `/admin/`:
 - Deploy a Vercel (prod desde `main`), verificar imágenes de Supabase y headers en el entorno real.
 - Cargar el WhatsApp como **número** en `/admin/configuracion` para que el CTA lleve el mensaje por proyecto.
 - Favicon cuadrado 32×32 (pendiente de fases anteriores).
+
+## Ajustes post-deploy (2026-07-26)
+
+**DONE** (feedback con Agustín tras el primer deploy):
+- **Fix deploy prod**: faltaban las env vars `NEXT_PUBLIC_SUPABASE_*` en Vercel (crasheaba el server render). Solución operativa: cargarlas + redeploy con rebuild.
+- **Renders de entorno**: nuevo campo `projects.environment_renders` (máx 3, webp sin degradar), admin (`EnvironmentRendersUpload`) + fila fija sin zoom debajo del hero (`ProjectEnvironmentRow`). Migración `0012`.
+- **Tagline**: "DISEÑO ARGENTINO" en una línea.
+- **Azul en dark**: token `--brand-ink` (aclarado a `#9C99F8` en dark) para legibilidad AA sin romper los pills.
+
+**Pendiente**: QA manual del usuario + commit. Ajustar `--brand-ink` si no llega a AA. Correr `/security-review`.

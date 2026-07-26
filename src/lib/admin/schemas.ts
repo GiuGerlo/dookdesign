@@ -10,6 +10,7 @@ export const projectSchema = z.object({
   featured: z.boolean(),
   published: z.boolean(),
   renders: z.array(z.string()),
+  environment_renders: z.array(z.string()).max(3, 'Máximo 3'),
 })
 
 export type ProjectFormData = z.infer<typeof projectSchema>

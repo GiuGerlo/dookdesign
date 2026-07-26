@@ -52,7 +52,7 @@ export function HomeGallery({ items }: HomeGalleryProps) {
                 </span>
               </span>
               <span className="mt-3.5 flex justify-between">
-                <span className="text-base font-semibold text-(--brand)">{p.title}</span>
+                <span className="text-base font-semibold text-(--brand-ink)">{p.title}</span>
                 <span className="text-xs tracking-[0.04em] text-(--text-secondary)">{p.year}</span>
               </span>
             </Link>

@@ -8,6 +8,7 @@ import { SiteNav } from '@/components/site/SiteNav'
 import { SiteFooter } from '@/components/site/SiteFooter'
 import { Reveal } from '@/components/site/Reveal'
 import { ProjectHero } from '@/components/site/ProjectHero'
+import { ProjectEnvironmentRow } from '@/components/site/ProjectEnvironmentRow'
 import { ProjectGallery } from '@/components/site/ProjectGallery'
 import { LightboxProvider } from '@/components/site/ProjectLightbox'
 import { RelatedProjects, type RelatedProject } from '@/components/site/RelatedProjects'
@@ -16,9 +17,9 @@ import type { Tables } from '@/types/database'
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const project = await getProjectBySlug(slug)
-  if (!project) return { title: 'Proyecto no encontrado — dookdesign' }
+  if (!project) return { title: 'Proyecto no encontrado — DooK Design' }
   return {
-    title: `${project.title} — dookdesign`,
+    title: `${project.title} — DooK Design`,
     description: project.description?.slice(0, 155) || `${project.title}, diseño industrial de Agustín Cavallera.`,
   }
 }
@@ -54,6 +55,11 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
   })
   const lightboxSlides = renderItems.filter(r => r.url).map(r => ({ src: r.url as string, alt: r.alt }))
 
+  // Renders de entorno: fila fija de contexto (no van al lightbox).
+  const envImages = project.environment_renders
+    .filter(Boolean)
+    .map((path, i) => ({ url: getPublicRenderUrl(path), alt: `${project.title} — entorno ${i + 1}` }))
+
   // Otros proyectos: misma categoría primero (aleatorio), luego el resto (aleatorio). Máx 3.
   const others = published.filter(p => p.slug !== project.slug)
   const sameCat = shuffle(others.filter(p => p.category_id && p.category_id === project.category_id))
@@ -75,6 +81,8 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
       <LightboxProvider slides={lightboxSlides}>
         <main>
           <ProjectHero slides={renderItems} title={project.title} year={project.year} categoryName={categoryName} />
+
+          <ProjectEnvironmentRow images={envImages} />
 
           {/* Contenido */}
           <Reveal className="mx-auto max-w-[1600px] px-5 pb-6 pt-16 md:px-16 md:pb-12 md:pt-28">

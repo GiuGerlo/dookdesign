@@ -38,7 +38,7 @@ export default function LoginPage() {
         <div className="flex justify-center mb-10">
           <Image
             src="/logo-dook.png"
-            alt="dookdesign"
+            alt="DooK Design"
             width={160}
             height={38}
             className="h-9 w-auto"

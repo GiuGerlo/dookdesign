@@ -41,7 +41,7 @@ export function SiteFooter({ settings, mini = false }: SiteFooterProps) {
 
   const bottomBar = (
     <div className="flex flex-wrap items-center justify-between gap-4 border-t border-(--site-border) pt-7">
-      <span className="text-xs text-(--text-secondary)">© 2026 dookdesign</span>
+      <span className="text-xs text-(--text-secondary)">© 2026 DooK Design</span>
       <DevCredit />
     </div>
   )
@@ -81,13 +81,13 @@ export function SiteFooter({ settings, mini = false }: SiteFooterProps) {
           <div className="flex flex-col gap-2.5">
             <span className="text-[11px] uppercase tracking-[0.14em] text-(--text-secondary)">Contacto</span>
             {waUrl && (
-              <a href={waUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-[15px] font-medium hover:text-(--brand)">
+              <a href={waUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-[15px] font-medium hover:text-(--brand-ink)">
                 <MessageCircle className="h-[18px] w-[18px] text-(--text-secondary)" aria-hidden />
                 WhatsApp
               </a>
             )}
             {mailto && settings?.email && (
-              <a href={mailto} className="flex items-center gap-2.5 text-[15px] font-medium hover:text-(--brand)">
+              <a href={mailto} className="flex items-center gap-2.5 text-[15px] font-medium hover:text-(--brand-ink)">
                 <Mail className="h-[18px] w-[18px] text-(--text-secondary)" aria-hidden />
                 {settings.email}
               </a>
@@ -104,7 +104,7 @@ export function SiteFooter({ settings, mini = false }: SiteFooterProps) {
                     href={s.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2.5 text-[15px] font-medium hover:text-(--brand)"
+                    className="flex items-center gap-2.5 text-[15px] font-medium hover:text-(--brand-ink)"
                   >
                     <Icon className="h-[18px] w-[18px] text-(--text-secondary)" aria-hidden />
                     {s.label}

@@ -19,6 +19,20 @@ export async function optimizeRender(file: File): Promise<File> {
   return new File([out], name, { type: 'image/webp' })
 }
 
+// Renders de entorno: imágenes de contexto de baja/media calidad. Solo se convierten a WebP
+// conservando la calidad (no se degradan). Downscale suave a 2560px porque van en una fila chica
+// y fija (sin zoom), no necesitan 4K.
+export async function optimizeEnvironmentRender(file: File): Promise<File> {
+  const out = await imageCompression(file, {
+    maxWidthOrHeight: 2560,
+    fileType: 'image/webp',
+    initialQuality: 0.9,
+    useWebWorker: true,
+  })
+  const name = file.name.replace(/\.[^.]+$/, '') + '.webp'
+  return new File([out], name, { type: 'image/webp' })
+}
+
 export async function uploadRender(file: File, projectId: string): Promise<string> {
   const supabase = createClient()
   const ext = file.name.split('.').pop() ?? 'jpg'

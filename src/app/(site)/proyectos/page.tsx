@@ -7,7 +7,7 @@ import { Reveal } from '@/components/site/Reveal'
 import { ProjectsGrid, type ProjectCardData } from '@/components/site/ProjectsGrid'
 
 export const metadata: Metadata = {
-  title: 'Proyectos — dookdesign',
+  title: 'Proyectos — DooK Design',
   description:
     'Portfolio de diseño industrial de Agustín Cavallera: mobiliario y objetos, del material a la forma terminada.',
 }

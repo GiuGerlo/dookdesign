@@ -31,7 +31,7 @@ export function SiteNav({ overHero = false, scrolledLabel }: { overHero?: boolea
       <nav
         className={`site-nav${overheroActive ? ' site-nav--overhero' : ''}${scrolled ? ' site-nav--scrolled' : ''} fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-5 py-5 md:px-16 md:py-7 transition-[background,box-shadow,border-color] duration-300`}
       >
-        <Link href="/" aria-label="dookdesign — inicio" className="relative block h-[34px] w-[120px]">
+        <Link href="/" aria-label="DooK Design — inicio" className="relative block h-[34px] w-[120px]">
           <Image
             src="/logo-dook-sec.png"
             alt=""
@@ -110,8 +110,8 @@ export function SiteNav({ overHero = false, scrolledLabel }: { overHero?: boolea
                 transition: `opacity 550ms cubic-bezier(0.4,0,0.2,1) ${menuOpen ? 140 + i * 75 : 0}ms, transform 550ms cubic-bezier(0.4,0,0.2,1) ${menuOpen ? 140 + i * 75 : 0}ms`,
               }}
             >
-              <span className="text-[13px] font-medium tabular-nums text-(--text-secondary) transition-colors duration-300 group-hover:text-(--brand)">0{i + 1}</span>
-              <span className="text-[clamp(44px,9vw,100px)] font-bold leading-[1.05] tracking-[-0.03em] transition-[color,transform] duration-300 group-hover:translate-x-2 group-hover:text-(--brand)">
+              <span className="text-[13px] font-medium tabular-nums text-(--text-secondary) transition-colors duration-300 group-hover:text-(--brand-ink)">0{i + 1}</span>
+              <span className="text-[clamp(44px,9vw,100px)] font-bold leading-[1.05] tracking-[-0.03em] transition-[color,transform] duration-300 group-hover:translate-x-2 group-hover:text-(--brand-ink)">
                 {link.label}
               </span>
             </Link>
