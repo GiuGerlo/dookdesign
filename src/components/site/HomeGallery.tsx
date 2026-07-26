@@ -1,28 +1,25 @@
+import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { RenderImage } from '@/components/site/RenderImage'
 import { Reveal } from '@/components/site/Reveal'
-import type { HomeGridSize } from '@/lib/admin/schemas'
+import { gridItemVars, type HomeGridItem } from '@/lib/admin/schemas'
 
 export interface GalleryItem {
   slug: string
   title: string
   year: number
   coverUrl: string | null
-  size: HomeGridSize
+  focusY: number
+  focusX: number
+  // Posición/span por breakpoint para las CSS vars de la grilla.
+  grid: HomeGridItem
 }
 
 interface HomeGalleryProps {
   items: GalleryItem[]
 }
 
-const sizeClass: Record<HomeGridSize, string> = {
-  sm: 'home-tile--sm',
-  wide: 'home-tile--wide',
-  tall: 'home-tile--tall',
-  big: 'home-tile--big',
-}
-
-// Grilla curada del home: orden y tamaño de cada celda vienen de admin (home_grid).
+// Grilla curada del home: span, posición y encuadre de cada celda vienen de admin (home_grid).
 export function HomeGallery({ items }: HomeGalleryProps) {
   return (
     <section id="proyectos" className="mx-auto max-w-[1600px] px-5 pb-16 pt-6 md:px-16 md:pb-28 md:pt-12">
@@ -32,7 +29,7 @@ export function HomeGallery({ items }: HomeGalleryProps) {
 
       <div className="home-grid">
         {items.map((p, i) => (
-          <Reveal key={p.slug} delay={i * 0.07} className={sizeClass[p.size]}>
+          <Reveal key={p.slug} delay={i * 0.07} style={gridItemVars(p.grid) as CSSProperties}>
             <Link href={`/proyectos/${p.slug}`} className="project-card flex h-full flex-col">
               <span className="relative flex-1 overflow-hidden rounded-[2px] bg-(--surface)">
                 {p.coverUrl ? (
@@ -41,6 +38,7 @@ export function HomeGallery({ items }: HomeGalleryProps) {
                     alt={`Render de ${p.title}`}
                     sizes="(max-width: 1079px) 100vw, 50vw"
                     className="card-render"
+                    objectPosition={`${p.focusX}% ${p.focusY}%`}
                   />
                 ) : (
                   <span className="absolute inset-0 flex items-center justify-center bg-[repeating-linear-gradient(135deg,var(--surface),var(--surface)_10px,var(--bg)_10px,var(--bg)_20px)] p-4 text-center">

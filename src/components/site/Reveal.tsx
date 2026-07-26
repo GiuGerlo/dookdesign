@@ -6,11 +6,12 @@ interface RevealProps {
   children: React.ReactNode
   delay?: number
   className?: string
+  style?: React.CSSProperties
 }
 
 // Fade + subida al entrar en viewport. `reducedMotion="user"` desactiva el transform
 // (queda solo el fade) si el usuario prefiere menos movimiento.
-export function Reveal({ children, delay = 0, className }: RevealProps) {
+export function Reveal({ children, delay = 0, className, style }: RevealProps) {
   return (
     <MotionConfig reducedMotion="user">
       <motion.div
@@ -19,6 +20,7 @@ export function Reveal({ children, delay = 0, className }: RevealProps) {
         viewport={{ once: true, amount: 0.15 }}
         transition={{ duration: 0.7, ease: 'easeOut', delay }}
         className={className}
+        style={style}
       >
         {children}
       </motion.div>

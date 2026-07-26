@@ -61,6 +61,8 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
           renders: project.renders,
           environment_renders: project.environment_renders,
           render_focus: (project.render_focus as Record<string, number>) ?? {},
+          render_focus_x: (project.render_focus_x as Record<string, number>) ?? {},
+          environment_layout: (project.environment_layout as ProjectFormData['environment_layout']) ?? {},
         }
       : {
           title: '',
@@ -74,6 +76,8 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
           renders: [],
           environment_renders: [],
           render_focus: {},
+          render_focus_x: {},
+          environment_layout: {},
         },
   })
 
@@ -259,6 +263,8 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
                 onUploadingChange={setIsUploading}
                 focus={watch('render_focus')}
                 onFocusChange={m => setValue('render_focus', m, { shouldDirty: true })}
+                focusX={watch('render_focus_x')}
+                onFocusXChange={m => setValue('render_focus_x', m, { shouldDirty: true })}
               />
             )}
           />
@@ -280,6 +286,8 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
                 value={field.value}
                 onChange={field.onChange}
                 onUploadingChange={setIsUploading}
+                layout={watch('environment_layout')}
+                onLayoutChange={m => setValue('environment_layout', m, { shouldDirty: true })}
               />
             )}
           />

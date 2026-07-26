@@ -32,6 +32,8 @@ export function SiteSettingsForm({ settings }: { settings: Tables<'site_settings
       whatsapp_url: settings.whatsapp_url ?? '',
       email: settings.email ?? '',
       hero_image: settings.hero_image,
+      hero_focus: settings.hero_focus ?? 50,
+      hero_focus_x: settings.hero_focus_x ?? 50,
       instagram_url: settings.instagram_url ?? '',
       behance_url: settings.behance_url ?? '',
       location: settings.location ?? '',
@@ -39,6 +41,12 @@ export function SiteSettingsForm({ settings }: { settings: Tables<'site_settings
   })
 
   const heroImage = watch('hero_image')
+  const heroFocus = watch('hero_focus')
+  const heroFocusX = watch('hero_focus_x')
+  // null = sin cargar; false = imagen más ancha que el hero → sin recorte vertical para ajustar.
+  const [heroAdjustable, setHeroAdjustable] = useState<boolean | null>(null)
+  // Eje X: false = imagen más alta que el hero → entra completa a lo ancho, sin recorte horizontal.
+  const [heroAdjustableX, setHeroAdjustableX] = useState<boolean | null>(null)
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: { 'image/*': [] },
@@ -82,14 +90,59 @@ export function SiteSettingsForm({ settings }: { settings: Tables<'site_settings
           </CardHeader>
           <CardContent className="space-y-3">
             {heroImage && (
-              <div className="relative h-[240px] overflow-hidden rounded-md bg-black/30">
-                {/* object-contain: se ve la imagen completa en su proporción original (así se sube al bucket) */}
+              <div className="relative aspect-video overflow-hidden rounded-md bg-black/30">
+                {/* Preview con el formato del hero (cover) + encuadre X/Y en vivo. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={getRenderUrl(heroImage)}
-                  alt="Portada actual del home"
-                  className="w-full h-full object-contain"
+                  alt="Portada del home"
+                  className="w-full h-full object-cover"
+                  onLoad={e => {
+                    const el = e.currentTarget
+                    const ar = el.naturalWidth / el.naturalHeight
+                    // Preview 16:9: recorte vertical si la imagen es más alta; horizontal si es más ancha.
+                    setHeroAdjustable(ar < 16 / 9 - 0.02)
+                    setHeroAdjustableX(ar > 16 / 9 + 0.02)
+                  }}
+                  style={{ objectPosition: `${heroFocusX}% ${heroFocus}%` }}
                 />
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={heroFocus}
+                  disabled={heroAdjustable === false}
+                  onChange={e => setValue('hero_focus', Number(e.target.value), { shouldDirty: true })}
+                  aria-label="Encuadre vertical de la portada"
+                  title={
+                    heroAdjustable === false
+                      ? 'Imagen más ancha que el hero: entra completa, sin recorte vertical para ajustar'
+                      : 'Encuadre del hero (arriba ↔ abajo)'
+                  }
+                  className="render-thumb__focus"
+                  style={{ writingMode: 'vertical-lr', opacity: 1 }}
+                />
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={heroFocusX}
+                  disabled={heroAdjustableX === false}
+                  onChange={e => setValue('hero_focus_x', Number(e.target.value), { shouldDirty: true })}
+                  aria-label="Encuadre horizontal de la portada"
+                  title={
+                    heroAdjustableX === false
+                      ? 'Imagen más alta que el hero: entra completa a lo ancho, sin recorte horizontal para ajustar'
+                      : 'Encuadre del hero (izquierda ↔ derecha)'
+                  }
+                  className="render-thumb__focus render-thumb__focus--x"
+                  style={{ opacity: 1 }}
+                />
+                {(heroAdjustable === false || heroAdjustableX === false) && (
+                  <span className="render-thumb__badge">
+                    {heroAdjustable === false ? 'sin recorte vertical' : 'sin recorte horizontal'}
+                  </span>
+                )}
               </div>
             )}
             <div
@@ -107,7 +160,7 @@ export function SiteSettingsForm({ settings }: { settings: Tables<'site_settings
               )}
             </div>
             <p className="text-xs text-muted-foreground">
-              Se muestra a pantalla completa en el inicio. Ideal: horizontal, alta resolución (se optimiza sola).
+              Se muestra a pantalla completa en el inicio. Ideal: horizontal, alta resolución (se optimiza sola). El deslizador de la derecha ajusta el encuadre vertical (arriba ↔ abajo).
             </p>
           </CardContent>
         </Card>

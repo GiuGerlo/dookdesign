@@ -13,6 +13,7 @@ import { ProjectGallery } from '@/components/site/ProjectGallery'
 import { LightboxProvider } from '@/components/site/ProjectLightbox'
 import { RelatedProjects, type RelatedProject } from '@/components/site/RelatedProjects'
 import { JsonLd } from '@/components/site/JsonLd'
+import { ENV_DEFAULT, type EnvLayoutItem } from '@/lib/admin/schemas'
 import { siteUrl, AUTHOR } from '@/lib/site/seo'
 import type { Tables } from '@/types/database'
 
@@ -75,6 +76,7 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
 
   // Renders → items con índice dentro del lightbox (solo los que tienen imagen).
   const renderFocus = (project.render_focus as Record<string, number>) ?? {}
+  const renderFocusX = (project.render_focus_x as Record<string, number>) ?? {}
   let li = 0
   const renderItems = project.renders.map((path, i) => {
     const url = path ? getPublicRenderUrl(path) : null
@@ -83,14 +85,25 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
       alt: `${project.title} — render ${i + 1}`,
       lightboxIndex: url ? li++ : -1,
       focusY: renderFocus[path] ?? 50,
+      focusX: renderFocusX[path] ?? 50,
     }
   })
   const lightboxSlides = renderItems.filter(r => r.url).map(r => ({ src: r.url as string, alt: r.alt }))
 
-  // Renders de entorno: fila fija de contexto (no van al lightbox).
+  // Renders de entorno: fila de contexto (no van al lightbox). Forma + encuadre por imagen.
+  const envLayout = (project.environment_layout as Record<string, EnvLayoutItem>) ?? {}
   const envImages = project.environment_renders
     .filter(Boolean)
-    .map((path, i) => ({ url: getPublicRenderUrl(path), alt: `${project.title} — entorno ${i + 1}` }))
+    .map((path, i) => {
+      const l = envLayout[path] ?? ENV_DEFAULT
+      return {
+        url: getPublicRenderUrl(path),
+        alt: `${project.title} — entorno ${i + 1}`,
+        size: l.size,
+        focusY: l.focus,
+        focusX: l.focus_x,
+      }
+    })
 
   // Otros proyectos: misma categoría primero (aleatorio), luego el resto (aleatorio). Máx 3.
   const others = published.filter(p => p.slug !== project.slug)
@@ -189,7 +202,7 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
                 <div className="max-w-[640px]">
                   <p className="mb-4 text-[11px] font-medium uppercase tracking-[0.14em] text-(--text-secondary)">¿Te interesa?</p>
                   <p className="text-[clamp(30px,4.5vw,56px)] font-bold leading-[1.02] tracking-[-0.03em]">
-                    Hablemos sobre {project.title}.
+                    Obtener mas información sobre {project.title}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-3">

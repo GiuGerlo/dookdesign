@@ -34,19 +34,23 @@ export default async function Home() {
         title: p.title,
         year: p.year,
         coverUrl: p.renders[0] ? getPublicRenderUrl(p.renders[0]) : null,
-        size: g.size,
+        focusY: g.focus ?? 50,
+        focusX: g.focus_x ?? 50,
+        grid: g,
       }
     })
     .filter((x): x is GalleryItem => x !== null)
 
-  // Fallback: si no hay grilla curada, los primeros 6 publicados como celdas chicas.
+  // Fallback: si no hay grilla curada, los primeros 6 publicados como celdas chicas (auto-flow).
   if (items.length === 0) {
     items = projects.slice(0, 6).map(p => ({
       slug: p.slug,
       title: p.title,
       year: p.year,
       coverUrl: p.renders[0] ? getPublicRenderUrl(p.renders[0]) : null,
-      size: 'sm' as const,
+      focusY: 50,
+      focusX: 50,
+      grid: { project_id: p.id, size: 'sm' as const },
     }))
   }
 
@@ -86,7 +90,7 @@ export default async function Home() {
       <SiteNav overHero />
       <main>
         <h1 className="sr-only">DooK Design — Diseño industrial de Agustín Cavallera</h1>
-        <HomeHero imageUrl={heroUrl} />
+        <HomeHero imageUrl={heroUrl} focusY={settings?.hero_focus ?? 50} focusX={settings?.hero_focus_x ?? 50} />
 
         <Reveal className="px-5 pb-8 pt-20 text-center md:px-16 md:pb-12 md:pt-32">
           <section id="sobre" aria-label="Sobre mí">

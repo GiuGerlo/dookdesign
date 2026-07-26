@@ -3,10 +3,12 @@ import { ScrollCue } from '@/components/site/ScrollCue'
 
 interface HomeHeroProps {
   imageUrl: string | null
+  focusY?: number
+  focusX?: number
 }
 
 // Hero fullscreen del home: portada elegida en admin + logo DK superpuesto.
-export function HomeHero({ imageUrl }: HomeHeroProps) {
+export function HomeHero({ imageUrl, focusY = 50, focusX = 50 }: HomeHeroProps) {
   return (
     <header className="relative h-[560px] overflow-hidden md:h-svh">
       {imageUrl ? (
@@ -19,6 +21,7 @@ export function HomeHero({ imageUrl }: HomeHeroProps) {
           // ponytail: bucket tal cual — Next re-encodaba a q75 y el hero se veía borroso.
           unoptimized
           className="object-cover"
+          style={{ objectPosition: `${focusX}% ${focusY}%` }}
         />
       ) : (
         <div className="absolute inset-0 bg-(--surface)" aria-hidden />

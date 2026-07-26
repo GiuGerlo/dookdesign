@@ -363,6 +363,17 @@ body {
 }
 .render-thumb:hover .render-thumb__focus { opacity: 1; }
 .render-thumb__focus:disabled { opacity: 0.25; cursor: not-allowed; }
+/* Variante horizontal (eje X): barra abajo en lugar de a la derecha. */
+.render-thumb__focus--x {
+  right: auto;
+  top: auto;
+  left: 50%;
+  bottom: 4px;
+  transform: translateX(-50%);
+  height: 18px;
+  width: 62%;
+  cursor: ew-resize;
+}
 .render-thumb__badge {
   position: absolute;
   left: 4px;
@@ -603,7 +614,7 @@ body {
    (cover) con el encuadre vertical elegido por render (--hero-focus, default 50%). */
 .hero-img { object-fit: contain; }
 @media (min-width: 768px) {
-  .hero-img { object-fit: cover; object-position: 50% var(--hero-focus, 50%); }
+  .hero-img { object-fit: cover; object-position: var(--hero-focus-x, 50%) var(--hero-focus, 50%); }
 }
 
 /* Cards de proyecto: B&N → color + zoom solo con hover real; touch siempre color */
@@ -626,15 +637,23 @@ body {
 }
 .btn-invert:hover { background: var(--text-primary); color: var(--bg); }
 
-/* Grilla curada del home: tamaño por celda elegido en admin (home_grid). */
-.home-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-auto-rows: 90px; grid-auto-flow: dense; gap: 12px; }
+/* Grilla curada del home: span + posición por celda elegidos en admin (home_grid).
+   Los spans (--dw/--dh/--mw/--mh) y la posición (--dcol/--drow/--mcol/--mrow) llegan
+   inline por celda desde gridItemVars(). Sin posición → `auto` = flujo en orden. */
+.home-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-auto-rows: 90px; gap: 12px; }
 @media (min-width: 1080px) {
   .home-grid { grid-template-columns: repeat(4, 1fr); grid-auto-rows: 130px; gap: 16px; }
 }
-.home-tile--sm   { grid-column: span 1; grid-row: span 2; }
-.home-tile--wide { grid-column: span 2; grid-row: span 2; }
-.home-tile--tall { grid-column: span 1; grid-row: span 4; }
-.home-tile--big  { grid-column: span 2; grid-row: span 4; }
+.home-grid > * {
+  grid-column: var(--mcol, auto) / span var(--mw, 1);
+  grid-row: var(--mrow, auto) / span var(--mh, 2);
+}
+@media (min-width: 1080px) {
+  .home-grid > * {
+    grid-column: var(--dcol, auto) / span var(--dw, 1);
+    grid-row: var(--drow, auto) / span var(--dh, 2);
+  }
+}
 
 @layer base {
   * {

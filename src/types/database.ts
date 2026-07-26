@@ -20,6 +20,7 @@ export type Database = {
           category_id: string | null
           created_at: string
           description: string
+          environment_layout: Json
           environment_renders: string[]
           featured: boolean
           id: string
@@ -27,6 +28,7 @@ export type Database = {
           order: number
           published: boolean
           render_focus: Json
+          render_focus_x: Json
           renders: string[]
           slug: string
           title: string
@@ -37,6 +39,7 @@ export type Database = {
           category_id?: string | null
           created_at?: string
           description?: string
+          environment_layout?: Json
           environment_renders?: string[]
           featured?: boolean
           id?: string
@@ -44,6 +47,7 @@ export type Database = {
           order?: number
           published?: boolean
           render_focus?: Json
+          render_focus_x?: Json
           renders?: string[]
           slug: string
           title: string
@@ -54,6 +58,7 @@ export type Database = {
           category_id?: string | null
           created_at?: string
           description?: string
+          environment_layout?: Json
           environment_renders?: string[]
           featured?: boolean
           id?: string
@@ -61,6 +66,7 @@ export type Database = {
           order?: number
           published?: boolean
           render_focus?: Json
+          render_focus_x?: Json
           renders?: string[]
           slug?: string
           title?: string
@@ -82,6 +88,8 @@ export type Database = {
           about_text: string
           behance_url: string | null
           email: string | null
+          hero_focus: number
+          hero_focus_x: number
           hero_image: string | null
           home_grid: Json
           id: string
@@ -94,6 +102,8 @@ export type Database = {
           about_text?: string
           behance_url?: string | null
           email?: string | null
+          hero_focus?: number
+          hero_focus_x?: number
           hero_image?: string | null
           home_grid?: Json
           id?: string
@@ -106,6 +116,8 @@ export type Database = {
           about_text?: string
           behance_url?: string | null
           email?: string | null
+          hero_focus?: number
+          hero_focus_x?: number
           hero_image?: string | null
           home_grid?: Json
           id?: string

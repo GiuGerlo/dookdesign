@@ -15,6 +15,52 @@ Historial por fase. Formato en `.claude/rules/docs-workflow.md`.
 **Migración**: nada / pasos.
 -->
 
+## [2026-07-26] admin-analytics — Dashboard de analytics en /admin
+
+**Resumen**: Nueva página `/admin/analytics` que consume la Web Analytics API de Vercel del lado server, para que el cliente vea el tráfico con su login de admin existente (sin darle acceso a Vercel).
+
+**Cambios**:
+- **Helper** `src/lib/admin/vercel-analytics.ts` (`server-only`): llama a `api.vercel.com/v1/query/web-analytics/{visits/count,visits/aggregate}` con `VERCEL_TOKEN`; cachea 5 min (`revalidate: 300`). Filtra rutas `/admin` de top páginas. Devuelve `null` si falta config → la UI avisa.
+- **Página** `/admin/analytics` (server component): selector 7/30/90 días por URL (`?days=`, sin JS de cliente), 2 tarjetas (visitantes + páginas vistas) y 4 rankings (top páginas, países con bandera, dispositivos, referrers).
+- **Nav**: item "Analytics" (icono `BarChart3`) en `AdminNav` + `AdminBottomNav`.
+- **Env**: `VERCEL_TOKEN` (secreto), `VERCEL_PROJECT_ID`, `VERCEL_TEAM_ID` documentadas en `.env.example`.
+
+**Breaking**: nada.
+**Migración**: nada. **Requiere** crear un Vercel Access Token y setear las 3 env vars en `.env.local` y en Vercel.
+
+**Resumen**: Los renders de entorno dejan de ser una fila fija 4:3: cada celda (máx 3) elige su forma (cuadrada/horizontal/vertical/panorámica), se reordena por drag y se encuadra con sliders X/Y. Las imágenes rectangulares entran sin recorte excesivo.
+
+**Cambios**:
+- **Layout por imagen**: nueva columna `projects.environment_layout` (jsonb) = `{ "<path>": { size, focus, focus_x } }`. `envSizeEnum` + `envSizeGeom` (span + aspect-ratio) + `ENV_DEFAULT` en `schemas.ts`.
+- **Público** (`ProjectEnvironmentRow`): flex-wrap centrado; cada celda toma ancho por `span` (1-2 de 3) y `aspect-ratio` por forma, con `object-position` del encuadre (cover). Data vieja sin layout = 4:3 centrado (fallback).
+- **Admin** (`EnvironmentRendersUpload`): reescrito con dnd-kit sortable (reorden), 4 botones de forma, sliders Y (derecha) + X (arriba), badge "sin recorte" por eje (detección aspecto imagen vs celda), preview en vivo. Poda el layout al borrar; inicializa defaults al subir.
+
+**Breaking**: nada. Renders de entorno existentes se ven 4:3 como antes hasta reeditarlos.
+**Migración**: `0016_environment_layout.sql` (aplicada) — `environment_layout` jsonb.
+
+## [2026-07-26] grilla+encuadre-x — Grilla libre + recorte horizontal
+
+**Resumen**: La grilla del home pasa de auto-flow a posición libre por celda (drag), con layouts independientes para desktop y móvil; y el encuadre gana el eje horizontal (X) en los 3 lugares donde ya existía el vertical.
+
+**Cambios**:
+- **Recorte eje X**: paridad con el eje Y en portada del home (`site_settings.hero_focus_x`), hero de proyecto (`projects.render_focus_x`, mapa path→0-100) y grilla (`home_grid[].focus_x`). Slider horizontal + badge "sin recorte" por eje (mutuamente excluyentes) en `SiteSettingsForm`, `RendersUpload` y `HomeGridEditor`. `object-position` pasa a `X% Y%` en `HomeHero`, `HomeGallery` y `.hero-img` (var `--hero-focus-x`).
+- **Grilla 100% modificable**: cada celda de `home_grid` guarda `desktop` y `mobile` (`{col,row}`, 1-based, opcionales). `HomeGridEditor` reescrito: toggle Desktop/Móvil, drag libre (dnd-kit `useDraggable`, snap a celda + clamp, sin anti-colisión → overlap permitido y WYSIWYG). El sitio posiciona vía CSS vars (`gridItemVars`) con media query; ausencia de posición = auto-flow (fallback backward-compat). Se quitó `grid-auto-flow: dense` y las clases `.home-tile--*`.
+
+**Breaking**: nada. Data vieja de `home_grid` (sin posición) sigue mostrándose por auto-flow hasta reeditarla.
+**Migración**: `0015_focus_x.sql` (aplicada) — `hero_focus_x` smallint + `render_focus_x` jsonb. La posición de la grilla no necesita migración (jsonb).
+
+## [2026-07-26] hero+og — Encuadre del home + OG por defecto corregido
+
+**Resumen**: Se extiende el encuadre ajustable a la portada del home y se corrige el OG por defecto del sitio (se veía chico/pixelado en WhatsApp).
+
+**Cambios**:
+- **Encuadre de la portada del home**: `site_settings.hero_focus` (smallint 0-100, default 50). Slider vertical con preview (cover 16:9) en `/admin/configuracion`; `HomeHero` aplica `object-position`. Migración `0014`.
+- **Encuadre en la grilla del inicio**: cada celda de `home_grid` guarda `focus` (0-100, opcional). Slider por celda en `/admin/inicio` (`HomeGridEditor`) con preview en vivo; `HomeGallery` lo aplica vía `RenderImage` (nueva prop `objectPosition`).
+- **OG por defecto**: el `opengraph.png` era 2250×1500 (3:2) → WhatsApp lo mostraba chico. Nuevo `public/og-home.png` 1200×630 (1.91:1) con el logo centrado y con aire. Referencias del código apuntan a `/og-home.png` (el `opengraph.png` original queda sin uso).
+
+**Breaking**: nada.
+**Migración**: `0014_hero_focus.sql` (aplicada).
+
 ## [2026-07-26] hero — Encuadre ajustable por imagen
 
 **Resumen**: El hero del detalle recortaba las imágenes centradas (object-cover) y "comía" partes del render (ej. la plataforma de DX8). Ahora cada render del carrusel guarda su propio encuadre vertical, ajustable desde el admin.

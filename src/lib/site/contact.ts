@@ -11,7 +11,7 @@ export function buildWhatsappUrl(rawWhatsapp: string | null | undefined, title?:
   if (!rawWhatsapp) return null
   const trimmed = rawWhatsapp.trim()
   const digits = trimmed.replace(/\D/g, '')
-  const message = title ? `Hola, me interesa el proyecto ${title}` : 'Hola, quiero hacer una consulta'
+  const message = title ? `Hola, me interesa ${title}` : 'Hola, quiero hacer una consulta'
   // Número (o link wa.me con número): armamos wa.me con el mensaje pre-cargado del producto.
   if (digits.length >= 8) {
     return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`
