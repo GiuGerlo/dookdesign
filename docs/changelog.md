@@ -15,6 +15,21 @@ Historial por fase. Formato en `.claude/rules/docs-workflow.md`.
 **Migración**: nada / pasos.
 -->
 
+## [2026-07-27] post-launch-lote — Entorno dev, medidas/entrega, banner de envíos, logos y banderas
+
+**Resumen**: Lote de fixes/features post-launch: se monta el entorno `dev` (preview con dominio fijo para que Agustín valide antes de prod), se agregan medidas y entrega estimada a los proyectos, un banner de "Envíos a todo el país" en el footer, y se mejoran analytics (banderas + nombre de país) y los logos del footer.
+
+**Cambios**:
+- **Infra dev**: rama `dev` (preview en Vercel con dominio fijo `dev.dookdesign.com`; flujo dev → validar → merge a `main` → prod). Se borró la rama stale `fase/5-paginas-publicas`. Nota: dev y prod comparten la misma DB Supabase (free tier) → aísla código/diseño, no contenido. Deployment Protection de previews apagada para que Agustín entre sin cuenta de Vercel.
+- **Medidas** (`projects.width_cm`, `length_cm`, `height_cm`, integer nullable): CRUD en card "Información" (3 inputs cm) + detalle público como chips etiquetados **Ancho/Largo/Alto** debajo de Materiales en la columna izquierda (muestra solo las presentes).
+- **Entrega estimada** (`projects.delivery_days`, integer nullable): input en el CRUD + "Entrega estimada en X días" centrada full-width en el detalle.
+- **Banner "Envíos a todo el país"** 🇦🇷: sección estática grande y centrada en el footer, arriba del CTA, con líneas divisorias. Bandera del paquete `country-flag-icons` (vector real).
+- **Analytics** (`/admin/analytics`): países ahora con **bandera vectorial + nombre completo** (`Intl.DisplayNames` es-AR + `country-flag-icons`), antes solo el código ISO.
+- **Footer**: barra final con tipografía simétrica (mismo size/uppercase/tracking en copyright y crédito del dev); **logos de marca reales** de WhatsApp e Instagram (SVG inline, antes íconos genéricos de lucide). Fix: el ícono de Instagram nunca se aplicaba (key del map `'Instagram'` vs handle `'dookdesign__'`).
+
+**Breaking**: nada.
+**Migración**: `0020_project_measures_delivery.sql` (aplicada, aditiva/nullable). **Deps**: +`country-flag-icons`. **Operativo**: asignar `dev.dookdesign.com` a la rama `dev` en Vercel (hecho) + apagar Vercel Authentication en previews (hecho).
+
 ## [2026-07-26] hero-2-imagenes — Portada con imagen separada desktop/móvil (sin video)
 
 **Resumen**: La portada del home pasa a tener dos imágenes independientes (una ancha para desktop, una angosta para móvil), cada una con su propio encuadre X/Y. Se elimina el soporte de video.

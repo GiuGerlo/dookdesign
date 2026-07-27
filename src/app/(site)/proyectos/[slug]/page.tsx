@@ -17,17 +17,6 @@ import { ENV_DEFAULT, type EnvLayoutItem } from '@/lib/admin/schemas'
 import { siteUrl, AUTHOR } from '@/lib/site/seo'
 import type { Tables } from '@/types/database'
 
-// Medidas: 3 completas → compacto "120 × 80 × 45 cm"; parcial → etiquetado sin ambigüedad. null → no mostrar.
-function formatMeasures(w: number | null, l: number | null, h: number | null): string | null {
-  if (w != null && l != null && h != null) return `${w} × ${l} × ${h} cm`
-  const parts = [
-    w != null && `Ancho ${w} cm`,
-    l != null && `Largo ${l} cm`,
-    h != null && `Alto ${h} cm`,
-  ].filter(Boolean)
-  return parts.length ? parts.join(' · ') : null
-}
-
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const project = await getProjectBySlug(slug)
@@ -82,7 +71,12 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
     ? (categories.find(c => c.id === project.category_id)?.name ?? null)
     : null
 
-  const measures = formatMeasures(project.width_cm, project.length_cm, project.height_cm)
+  // Medidas como chips etiquetados (aclara ancho/largo/alto). Muestra solo las presentes.
+  const measureChips = [
+    project.width_cm != null && `Ancho ${project.width_cm} cm`,
+    project.length_cm != null && `Largo ${project.length_cm} cm`,
+    project.height_cm != null && `Alto ${project.height_cm} cm`,
+  ].filter(Boolean) as string[]
 
   // Renders → items con índice dentro del lightbox (solo los que tienen imagen).
   const renderFocus = (project.render_focus as Record<string, number>) ?? {}
@@ -170,7 +164,7 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
           <Reveal className="mx-auto max-w-[1600px] px-5 pb-6 pt-16 md:px-16 md:pb-12 md:pt-28">
             <div className="grid gap-10 md:gap-16 lg:grid-cols-[0.8fr_1.6fr]">
               <div>
-                <p className="mb-4 text-[11px] font-medium uppercase tracking-[0.14em] text-(--text-secondary)">El proyecto</p>
+                <p className="mb-4 text-[11px] font-medium uppercase tracking-[0.14em] text-(--text-secondary)">El producto</p>
                 <h2 className="mb-8 text-[clamp(30px,4vw,44px)] font-semibold leading-[1.05] tracking-[-0.02em]">{project.title}</h2>
                 <dl className="border-t border-(--site-border)">
                   <div className="flex items-baseline justify-between gap-5 border-b border-(--site-border) py-4">
@@ -193,20 +187,19 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
                       </dd>
                     </div>
                   )}
-                  {measures && (
+                  {measureChips.length > 0 && (
                     <div className="pt-5">
-                      <dt className="mb-2 text-[11px] font-medium uppercase tracking-[0.12em] text-(--text-secondary)">Medidas</dt>
-                      <dd className="text-base font-medium tabular-nums">{measures}</dd>
+                      <dt className="mb-3.5 text-[11px] font-medium uppercase tracking-[0.12em] text-(--text-secondary)">Medidas</dt>
+                      <dd className="flex flex-wrap gap-2">
+                        {measureChips.map(chip => (
+                          <span key={chip} className="rounded-full bg-(--surface) px-4 py-2 text-xs font-medium tabular-nums">
+                            {chip}
+                          </span>
+                        ))}
+                      </dd>
                     </div>
                   )}
                 </dl>
-
-                {project.delivery_days != null && (
-                  <p className="mt-8 text-sm text-(--text-secondary)">
-                    Entrega estimada en{' '}
-                    <span className="font-semibold text-(--brand-ink) tabular-nums">{project.delivery_days} días</span>
-                  </p>
-                )}
               </div>
               {project.description && (
                 <p className="max-w-[60ch] whitespace-pre-line text-[clamp(18px,2.1vw,22px)] font-light leading-[1.72] text-pretty">
@@ -214,6 +207,13 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
                 </p>
               )}
             </div>
+
+            {project.delivery_days != null && (
+              <p className="mt-12 text-center text-sm text-(--text-secondary) md:mt-16">
+                Entrega estimada en{' '}
+                <span className="font-semibold text-(--brand-ink) tabular-nums">{project.delivery_days} días</span>
+              </p>
+            )}
           </Reveal>
 
           {lightboxSlides.length > 0 && <ProjectGallery images={renderItems} />}

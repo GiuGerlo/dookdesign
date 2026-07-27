@@ -19,6 +19,7 @@ Esquema de fases: **números 1–N**.
 | 4.5 | Admin redesign (shadcn/ui, bugs, sileo, logos) | DONE | 4 | 2026-07-23 |
 | 5 | Galería pública + página de proyecto con animaciones | DONE | 2, 4 | 2026-07-25 |
 | 6 | Post-launch: portada video, /proyectos editable, keep-alive + observabilidad + hardening | DONE | 5 | 2026-07-26 |
+| 7 | Post-launch lote: entorno dev, medidas/entrega, banner envíos, logos + banderas | DONE | 6 | 2026-07-27 |
 
 > Ajustá las fases a medida que se concreten. Cada fase: spec → plan → tasks → cierre
 > (ver `.claude/rules/docs-workflow.md`).
@@ -139,3 +140,17 @@ El panel admin está funcional y en producción. Rutas bajo `/admin/`:
 - Backups periódicos de la DB si el contenido se vuelve crítico (free tier con backups limitados).
 
 **Recomendaciones futuras (no urgentes)**: transforms de imágenes si el material crece · rate-limit en login (Vercel Firewall/BotID) · error monitoring (Sentry) opcional.
+
+## Fase 7 — Post-launch lote (2026-07-27)
+
+**DONE** (feedback con Agustín). Ver `docs/changelog.md` (entrada `post-launch-lote`):
+- **Entorno dev**: rama `dev` = preview con dominio fijo `dev.dookdesign.com` (dev → validar → merge a `main` → prod). DB Supabase compartida con prod → aísla código/diseño, no contenido. Vercel Authentication apagada en previews para que Agustín entre sin cuenta.
+- **Medidas** (ancho/largo/alto, cm) y **entrega estimada** (días) por proyecto: migración `0020` (aditiva/nullable), CRUD + detalle. Medidas como chips Ancho/Largo/Alto bajo Materiales; entrega centrada.
+- **Banner "Envíos a todo el país"** en el footer (grande, centrado, con banderas reales `country-flag-icons`).
+- **Analytics**: países con bandera + nombre completo (`Intl.DisplayNames` + `country-flag-icons`).
+- **Footer**: tipografía simétrica en la barra final + logos de marca reales WhatsApp/Instagram (fix de ícono instagram que no se aplicaba).
+
+**Pendiente operativo**:
+- Commit del lote en `dev` (lo hace el usuario) + merge a `main` cuando Agustín valide.
+- `hero_video` sigue como columna muerta (dropear a mano cuando se confirme).
+- Favicon cuadrado 32×32 (asset pendiente de siempre).
