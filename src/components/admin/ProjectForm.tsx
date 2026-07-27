@@ -54,6 +54,10 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
           slug: project.slug,
           year: project.year,
           category_id: project.category_id,
+          width_cm: project.width_cm,
+          length_cm: project.length_cm,
+          height_cm: project.height_cm,
+          delivery_days: project.delivery_days,
           materials: project.materials,
           description: project.description,
           featured: project.featured,
@@ -206,6 +210,20 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
               placeholder="Escribí un material y presioná Enter"
               className={inputClass}
             />
+          </div>
+
+          <div className="md:col-span-2 space-y-1.5">
+            <Label className={labelClass}>Medidas (cm)</Label>
+            <div className="grid grid-cols-3 gap-3">
+              <Input type="number" min={0} placeholder="Ancho" {...register('width_cm', { valueAsNumber: true })} className={inputClass} />
+              <Input type="number" min={0} placeholder="Largo" {...register('length_cm', { valueAsNumber: true })} className={inputClass} />
+              <Input type="number" min={0} placeholder="Alto" {...register('height_cm', { valueAsNumber: true })} className={inputClass} />
+            </div>
+          </div>
+
+          <div className="md:col-span-2 space-y-1.5">
+            <Label className={labelClass}>Entrega estimada (días)</Label>
+            <Input type="number" min={0} placeholder="Ej: 15" {...register('delivery_days', { valueAsNumber: true })} className={inputClass} />
           </div>
         </CardContent>
       </Card>

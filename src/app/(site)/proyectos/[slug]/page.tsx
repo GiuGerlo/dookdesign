@@ -17,6 +17,17 @@ import { ENV_DEFAULT, type EnvLayoutItem } from '@/lib/admin/schemas'
 import { siteUrl, AUTHOR } from '@/lib/site/seo'
 import type { Tables } from '@/types/database'
 
+// Medidas: 3 completas → compacto "120 × 80 × 45 cm"; parcial → etiquetado sin ambigüedad. null → no mostrar.
+function formatMeasures(w: number | null, l: number | null, h: number | null): string | null {
+  if (w != null && l != null && h != null) return `${w} × ${l} × ${h} cm`
+  const parts = [
+    w != null && `Ancho ${w} cm`,
+    l != null && `Largo ${l} cm`,
+    h != null && `Alto ${h} cm`,
+  ].filter(Boolean)
+  return parts.length ? parts.join(' · ') : null
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const project = await getProjectBySlug(slug)
@@ -70,6 +81,8 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
   const categoryName = project.category_id
     ? (categories.find(c => c.id === project.category_id)?.name ?? null)
     : null
+
+  const measures = formatMeasures(project.width_cm, project.length_cm, project.height_cm)
 
   // Renders → items con índice dentro del lightbox (solo los que tienen imagen).
   const renderFocus = (project.render_focus as Record<string, number>) ?? {}
@@ -180,7 +193,20 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
                       </dd>
                     </div>
                   )}
+                  {measures && (
+                    <div className="pt-5">
+                      <dt className="mb-2 text-[11px] font-medium uppercase tracking-[0.12em] text-(--text-secondary)">Medidas</dt>
+                      <dd className="text-base font-medium tabular-nums">{measures}</dd>
+                    </div>
+                  )}
                 </dl>
+
+                {project.delivery_days != null && (
+                  <p className="mt-8 text-sm text-(--text-secondary)">
+                    Entrega estimada en{' '}
+                    <span className="font-semibold text-(--brand-ink) tabular-nums">{project.delivery_days} días</span>
+                  </p>
+                )}
               </div>
               {project.description && (
                 <p className="max-w-[60ch] whitespace-pre-line text-[clamp(18px,2.1vw,22px)] font-light leading-[1.72] text-pretty">

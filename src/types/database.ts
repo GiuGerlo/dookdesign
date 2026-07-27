@@ -19,11 +19,14 @@ export type Database = {
         Row: {
           category_id: string | null
           created_at: string
+          delivery_days: number | null
           description: string
           environment_layout: Json
           environment_renders: string[]
           featured: boolean
+          height_cm: number | null
           id: string
+          length_cm: number | null
           materials: string[]
           order: number
           published: boolean
@@ -33,16 +36,20 @@ export type Database = {
           slug: string
           title: string
           updated_at: string
+          width_cm: number | null
           year: number
         }
         Insert: {
           category_id?: string | null
           created_at?: string
+          delivery_days?: number | null
           description?: string
           environment_layout?: Json
           environment_renders?: string[]
           featured?: boolean
+          height_cm?: number | null
           id?: string
+          length_cm?: number | null
           materials?: string[]
           order?: number
           published?: boolean
@@ -52,16 +59,20 @@ export type Database = {
           slug: string
           title: string
           updated_at?: string
+          width_cm?: number | null
           year: number
         }
         Update: {
           category_id?: string | null
           created_at?: string
+          delivery_days?: number | null
           description?: string
           environment_layout?: Json
           environment_renders?: string[]
           featured?: boolean
+          height_cm?: number | null
           id?: string
+          length_cm?: number | null
           materials?: string[]
           order?: number
           published?: boolean
@@ -71,6 +82,7 @@ export type Database = {
           slug?: string
           title?: string
           updated_at?: string
+          width_cm?: number | null
           year?: number
         }
         Relationships: [

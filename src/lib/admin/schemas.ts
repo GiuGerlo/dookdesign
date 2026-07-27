@@ -21,10 +21,24 @@ export const envSizeGeom: Record<EnvSize, { span: number; ar: string }> = {
 
 export const ENV_DEFAULT: EnvLayoutItem = { size: 'horizontal', focus: 50, focus_x: 50 }
 
+// Medida/entrega opcional: input vacío (RHF valueAsNumber → NaN) o null → null. Rechaza negativos.
+const optMeasure = z
+  .number()
+  .int()
+  .min(0)
+  .or(z.nan())
+  .nullable()
+  .transform(v => (v == null || Number.isNaN(v) ? null : v))
+
 export const projectSchema = z.object({
   title: z.string().min(1, 'Requerido'),
   slug: z.string().min(1, 'Requerido').regex(/^[a-z0-9-]+$/, 'Solo minúsculas, números y guiones'),
   year: z.number().int().min(1900).max(2100),
+  // Medidas físicas (cm) y entrega estimada (días). Opcionales.
+  width_cm: optMeasure,
+  length_cm: optMeasure,
+  height_cm: optMeasure,
+  delivery_days: optMeasure,
   category_id: z.union([z.string().uuid(), z.literal(''), z.null()]).transform(v => v === '' ? null : v),
   materials: z.array(z.string()),
   description: z.string(),

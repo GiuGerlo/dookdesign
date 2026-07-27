@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { BarChart3 } from 'lucide-react'
+import * as Flags from 'country-flag-icons/react/3x2'
 import { getAnalytics, type AnalyticsRow } from '@/lib/admin/vercel-analytics'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
@@ -13,10 +14,22 @@ const RANGES = [
 const VALID_DAYS = RANGES.map(r => r.days) as readonly number[]
 const nf = new Intl.NumberFormat('es-AR')
 
-// Código ISO de país (AR) → emoji bandera (🇦🇷).
-function flag(code: string): string {
-  if (code.length !== 2) return ''
-  return String.fromCodePoint(...[...code.toUpperCase()].map(c => 0x1f1e6 + c.charCodeAt(0) - 65))
+// Código ISO (AR) → nombre completo en español (Argentina). Nativo, sin dependencia.
+const regionNames = new Intl.DisplayNames(['es-AR'], { type: 'region' })
+function countryName(code: string): string {
+  try { return regionNames.of(code.toUpperCase()) ?? code } catch { return code }
+}
+
+// Bandera vectorial por código ISO (country-flag-icons). Igual criterio que el footer.
+const flagByCode = Flags as Record<string, React.ComponentType<{ title?: string; className?: string }>>
+function CountryFlag({ code }: { code: string }) {
+  const F = flagByCode[code.toUpperCase()]
+  return (
+    <span className="inline-flex items-center gap-2">
+      {F && <F title={countryName(code)} className="h-3.5 w-5 shrink-0 overflow-hidden rounded-[2px]" />}
+      {countryName(code)}
+    </span>
+  )
 }
 
 function RankCard({
@@ -27,7 +40,7 @@ function RankCard({
 }: {
   title: string
   rows: AnalyticsRow[]
-  format?: (value: string) => string
+  format?: (value: string) => React.ReactNode
   metric?: 'visitors' | 'pageviews'
 }) {
   return (
@@ -127,7 +140,7 @@ export default async function AnalyticsPage({
 
           <div className="grid gap-4 md:grid-cols-2">
             <RankCard title="Top páginas" rows={data.topPages} metric="pageviews" />
-            <RankCard title="Países" rows={data.countries} format={c => `${flag(c)} ${c}`.trim()} />
+            <RankCard title="Países" rows={data.countries} format={c => <CountryFlag code={c} />} />
             <RankCard title="Dispositivos" rows={data.devices} format={d => d.charAt(0).toUpperCase() + d.slice(1)} />
             <RankCard title="Referrers" rows={data.referrers} format={r => r || 'Directo'} />
           </div>

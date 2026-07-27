@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { MessageCircle, Mail, MapPin, ExternalLink, type LucideIcon } from 'lucide-react'
 import { buildWhatsappUrl, buildEmailUrl } from '@/lib/site/contact'
+import { AR } from 'country-flag-icons/react/3x2'
 import type { Tables } from '@/types/database'
 
 // lucide-react ya no incluye logos de marca (Instagram, etc.) → SVG inline estilo outline.
@@ -63,7 +64,7 @@ export function SiteFooter({ settings, mini = false }: SiteFooterProps) {
 
   const bottomBar = (
     <div className="flex flex-wrap items-center justify-between gap-4 border-t border-(--site-border) pt-7">
-      <span className="text-xs text-(--text-secondary)">© 2026 DooK Design</span>
+      <span className="text-[11px] uppercase tracking-[0.08em] text-(--text-secondary)">© 2026 DooK Design</span>
       <DevCredit />
     </div>
   )
@@ -79,6 +80,13 @@ export function SiteFooter({ settings, mini = false }: SiteFooterProps) {
   return (
     <footer id="contacto">
       <div className="mx-auto max-w-[1600px] px-5 py-10 md:px-16 md:py-12">
+        {/* Envíos a todo el país */}
+        <div className="flex flex-wrap items-center justify-center gap-4 border-t border-(--site-border) pt-14 pb-14 text-center md:gap-6">
+          <p className="text-[clamp(32px,5vw,64px)] font-bold leading-[1.02] tracking-[-0.03em]">
+            Envíos a todo el país
+          </p>
+          <AR title="Argentina" className="h-9 w-[54px] shrink-0 overflow-hidden rounded-md shadow-sm md:h-11 md:w-[66px]" />
+        </div>
         {/* CTA */}
         <div className="flex flex-wrap items-end justify-between gap-7 border-t border-(--site-border) pt-14 pb-14">
           <p className="max-w-[720px] text-[clamp(32px,5vw,64px)] font-bold leading-[1.02] tracking-[-0.03em]">
