@@ -1,28 +1,116 @@
 # dookdesign
 
-Portfolio de Agustín Cavallera, diseñador industrial — galería de diseños y renders en alta calidad con animaciones.
+Portfolio de **Agustín Cavallera**, diseñador industrial. Galería visual de diseños y renders en alta calidad, con panel de administración propio para que Agustín gestione todo el contenido sin tocar código.
+
+- **Producción**: [dookdesign.com](https://dookdesign.com)
+
+---
+
+## Qué incluye
+
+**Sitio público**
+- Home con portada editable (imagen desktop + móvil, cada una con su encuadre) y grilla curada de proyectos.
+- Listado `/proyectos` con grilla libre editable desde el admin.
+- Detalle de proyecto `/proyectos/[slug]`: hero carrusel, renders de entorno, ficha (categoría, año, materiales, medidas), galería con lightbox y CTA de contacto por WhatsApp/Email.
+- Banner "Envíos a todo el país", footer con contacto y redes.
+- Tema claro/oscuro con transición animada, animaciones de scroll, 100% responsive.
+
+**Panel admin** (`/admin`, protegido con login)
+- CRUD de proyectos con upload de renders por dropzone a Supabase Storage, reordenamiento drag-and-drop, encuadre por imagen.
+- Gestión de portada del home, página `/proyectos`, categorías y configuración global (about, contacto).
+- Dashboard de analytics (Vercel Web Analytics) con países, dispositivos, referrers y páginas top.
+
+**SEO / observabilidad**
+- Metadata + OpenGraph, JSON-LD, sitemap, robots y `llms.txt` dinámicos.
+- Vercel Analytics + Speed Insights.
+- Cron keep-alive para que el free tier de Supabase no se pause.
+
+---
 
 ## Stack
 
-- **Backend**: Next.js 16 (App Router, Route Handlers) sobre Node 24 + Supabase
-- **Frontend**: Next.js 16 (React 19, TypeScript, App Router) + Tailwind CSS
-- **DB**: Supabase (Postgres metadata + Storage con CDN para renders) — free tier
-- **Infra**: Vercel Hobby (prod + preview deploys, gratis) · Supabase · dev local
+- **Framework**: Next.js 16 (App Router, React 19, TypeScript) sobre Node 24.
+- **Estilos**: Tailwind CSS v4 + shadcn/ui (variante Base UI) en el admin.
+- **DB / Storage / Auth**: Supabase (Postgres con RLS + Storage con CDN para renders + Supabase Auth).
+- **Animaciones**: `motion`, `embla-carousel-react`, `yet-another-react-lightbox`.
+- **Forms**: React Hook Form + Zod.
+- **Infra**: Vercel (deploy automático por push; prod desde `main`, preview desde `dev`).
+- **Gestor de paquetes**: pnpm (siempre pnpm, nunca npm).
 
-## Levantar en local
+---
+
+## Correr en local
+
+Requisitos: Node 24+, pnpm, un proyecto Supabase.
+
+```bash
+pnpm install
+cp .env.example .env.local   # completar los valores
+pnpm dev                     # http://localhost:3000
+```
+
+### Variables de entorno
+
+Ver `.env.example`. Las claves:
+
+| Variable | Uso |
+|----------|-----|
+| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Cliente Supabase (público). |
+| `SUPABASE_SERVICE_ROLE_KEY` | Solo server-side. Nunca exponer al cliente. |
+| `VERCEL_TOKEN` / `VERCEL_PROJECT_ID` / `VERCEL_TEAM_ID` | Dashboard de analytics en `/admin/analytics`. |
+| `CRON_SECRET` | Protege el endpoint del cron keep-alive. |
+
+`.env*` nunca se commitea (salvo `.env.example`).
+
+### Scripts
+
+```bash
+pnpm dev         # dev server (Turbopack)
+pnpm build       # build de producción
+pnpm start       # servir el build
+pnpm typecheck   # tsc --noEmit
+```
+
+---
+
+## Base de datos
+
+Migraciones versionadas en `supabase/migrations/` (`0001` … `0020`). Schema principal: tabla `projects` (metadata + renders + medidas + entrega), `categories`, `site_settings`, con RLS por rol (lectura pública de publicados, escritura solo admin) y bucket público `renders`.
+
+---
+
+## Estructura
 
 ```
-pnpm dev
+src/
+  app/
+    (site)/          # sitio público (home, /proyectos, detalle)
+    admin/           # panel con login (CRUD, config, analytics)
+    api/keep-alive/  # endpoint del cron
+  components/
+    site/            # UI pública
+    admin/           # UI del panel
+    ui/              # primitivos shadcn
+  lib/               # queries Supabase, helpers, schemas Zod
+  types/             # tipos generados de la DB
+supabase/migrations/ # SQL versionado
+docs/                # roadmap, changelog, ADRs, planes
 ```
 
-## Tests
+---
 
-```
-n/a     # backend  (agregar Vitest cuando haya lógica que lo justifique)
-n/a     # frontend
-```
+## Deploy
 
-## Cómo se trabaja acá
+Modelo de dos ramas, deploy automático de Vercel por push:
 
-Metodología por fases con docs sincronizados. Ver `CLAUDE.md` y `.claude/rules/`.
-Estado y roadmap en `docs/roadmap.md`.
+- **`dev`** → preview en `dev.dookdesign.com`. Se sube acá para que Agustín valide.
+- **`main`** → producción en `dookdesign.com`. Merge desde `dev` cuando está aprobado.
+
+---
+
+## Documentación
+
+- Guía del proyecto y convenciones: `CLAUDE.md` y `.claude/rules/`.
+- Estado y planificación: `docs/roadmap.md`.
+- Historial de cambios: `docs/changelog.md`.
+- Decisiones de arquitectura: `docs/adr/`.

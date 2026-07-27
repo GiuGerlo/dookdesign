@@ -12,11 +12,17 @@ Cada sub-proyecto del roadmap pasa por estas etapas obligatorias:
 2. **Plan** (skill writing-plans):
    - Output: `docs/plans/<fase>-<slug>-plan.md`.
    - Granularidad: cada paso accionable, con criterio de "done".
-3. **Tasks** (TaskCreate):
+3. **Grilling** (obligatorio tras cada plan):
+   - **SIEMPRE `/grill-me`** después de armar un plan, para afilarlo antes de codear.
+   - **`/grill-with-docs`** en su lugar cuando el plan tiene decisiones de arquitectura que ameritan
+     ADRs/glosario (DB, auth, deploy, modelo de dominio) — así la entrevista deja los ADRs escritos.
+   - Nota: los skills tienen `disable-model-invocation: true` → los dispara el usuario con el slash.
+     El agente debe pedir explícitamente correrlo al terminar el plan si el usuario no lo hizo.
+4. **Tasks** (TaskCreate):
    - Reflejan el plan 1:1. Marcar `in_progress` / `completed` en tiempo real.
-4. **Decisiones** (ADR):
+5. **Decisiones** (ADR):
    - Cualquier decisión que afecte fuera de la fase (DB, auth, deploy, etc.) → `docs/adr/NNNN-<slug>.md`.
-5. **Cierre**:
+6. **Cierre**:
    - `docs/changelog.md` += entrada con fecha y resumen.
    - `docs/roadmap.md` → estado del sub-proyecto = DONE, dependientes desbloqueados.
    - Plan marcado DONE.

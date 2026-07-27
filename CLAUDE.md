@@ -34,8 +34,9 @@ Detalle en `.claude/rules/git-workflow.md` y `.claude/rules/docs-workflow.md`.
 
 1. Todo cambio creativo/de diseño arranca con `/brainstorming` o `/frontend-design` → spec en `docs/superpowers/specs/`.
 2. Spec aprobado → plan en `docs/plans/` (via skill writing-plans).
-3. Una **fase = un commit**. Los commits los hace el **usuario**; el agente sugiere mensaje en formato Conventional (≤50 chars) — ver skill `caveman-commit`.
-4. Cerrar fase → actualizar `roadmap.md` + `changelog.md`.
+3. **Tras cada plan, SIEMPRE `/grill-me`** para afilarlo; `/grill-with-docs` cuando hay decisiones de arquitectura (deja ADRs). Ver `.claude/rules/docs-workflow.md`.
+4. Una **fase = un commit**. Los commits los hace el **usuario**; el agente sugiere mensaje en formato Conventional (≤50 chars) — ver skill `caveman-commit`.
+5. Cerrar fase → actualizar `roadmap.md` + `changelog.md`.
 
 ## 5. Convenciones rápidas
 
