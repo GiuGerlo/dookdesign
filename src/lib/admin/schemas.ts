@@ -21,6 +21,15 @@ export const envSizeGeom: Record<EnvSize, { span: number; ar: string }> = {
 
 export const ENV_DEFAULT: EnvLayoutItem = { size: 'horizontal', focus: 50, focus_x: 50 }
 
+// Color de un proyecto: hex + nombre + render asociado (path presente en renders).
+// El detalle público muestra un swatch por color y al tocarlo mueve el carrusel a ese render.
+export const colorSchema = z.object({
+  hex: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Hex inválido'),
+  name: z.string().min(1, 'Requerido'),
+  render: z.string().min(1, 'Asociá una imagen'),
+})
+export type ProjectColor = z.infer<typeof colorSchema>
+
 // Medida/entrega opcional: input vacío (RHF valueAsNumber → NaN) o null → null. Rechaza negativos.
 const optMeasure = z
   .number()
@@ -51,6 +60,8 @@ export const projectSchema = z.object({
   render_focus_x: z.record(z.string(), z.number().min(0).max(100)),
   // Layout de renders de entorno: { "<path>": { size, focus, focus_x } }.
   environment_layout: z.record(z.string(), envLayoutItemSchema),
+  // Colores del producto. Cada `render` debe existir en `renders` (se valida al guardar en el form).
+  colors: z.array(colorSchema),
 })
 
 export type ProjectFormData = z.infer<typeof projectSchema>

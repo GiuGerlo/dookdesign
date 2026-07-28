@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { MessageCircle, Mail } from 'lucide-react'
+import { Mail } from 'lucide-react'
 import { getProjectBySlug, getPublishedProjects, getCategories, getSiteSettings } from '@/lib/projects/queries'
 import { getPublicRenderUrl } from '@/lib/site/images'
-import { buildWhatsappUrl, buildEmailUrl } from '@/lib/site/contact'
+import { buildEmailUrl } from '@/lib/site/contact'
 import { SiteNav } from '@/components/site/SiteNav'
 import { SiteFooter } from '@/components/site/SiteFooter'
 import { Reveal } from '@/components/site/Reveal'
@@ -13,7 +13,7 @@ import { ProjectGallery } from '@/components/site/ProjectGallery'
 import { LightboxProvider } from '@/components/site/ProjectLightbox'
 import { RelatedProjects, type RelatedProject } from '@/components/site/RelatedProjects'
 import { JsonLd } from '@/components/site/JsonLd'
-import { ENV_DEFAULT, type EnvLayoutItem } from '@/lib/admin/schemas'
+import { ENV_DEFAULT, type EnvLayoutItem, type ProjectColor } from '@/lib/admin/schemas'
 import { siteUrl, AUTHOR } from '@/lib/site/seo'
 import type { Tables } from '@/types/database'
 
@@ -94,6 +94,12 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
   })
   const lightboxSlides = renderItems.filter(r => r.url).map(r => ({ src: r.url as string, alt: r.alt }))
 
+  // Colores → swatches del hero. Se mapea cada color a su índice de slide (por su render).
+  // Se descartan colores cuyo render ya no existe (defensivo; el admin lo bloquea al guardar).
+  const heroColors = ((project.colors as ProjectColor[] | null) ?? [])
+    .map(c => ({ hex: c.hex, name: c.name, render: c.render, slideIndex: project.renders.indexOf(c.render) }))
+    .filter(c => c.slideIndex >= 0)
+
   // Renders de entorno: fila de contexto (no van al lightbox). Forma + encuadre por imagen.
   const envLayout = (project.environment_layout as Record<string, EnvLayoutItem>) ?? {}
   const envImages = project.environment_renders
@@ -121,7 +127,6 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
     categoryName: p.category_id ? (categories.find(c => c.id === p.category_id)?.name ?? null) : null,
   }))
 
-  const waUrl = buildWhatsappUrl(settings?.whatsapp_url, project.title)
   const emailUrl = buildEmailUrl(settings?.email, project.title)
 
   const projectUrl = `${siteUrl}/proyectos/${project.slug}`
@@ -153,10 +158,19 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
   return (
     <>
       <JsonLd data={jsonLd} />
-      <SiteNav overHero scrolledLabel={project.title} />
+      <SiteNav overHero scrolledLabel={project.title} whatsappUrl={settings?.whatsapp_url} />
       <LightboxProvider slides={lightboxSlides}>
         <main>
-          <ProjectHero slides={renderItems} title={project.title} year={project.year} categoryName={categoryName} />
+          <ProjectHero
+            slides={renderItems}
+            title={project.title}
+            year={project.year}
+            categoryName={categoryName}
+            colors={heroColors}
+            projectId={project.id}
+            slug={project.slug}
+            firstRender={project.renders[0] ?? null}
+          />
 
           <ProjectEnvironmentRow images={envImages} />
 
@@ -218,8 +232,8 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
 
           {lightboxSlides.length > 0 && <ProjectGallery images={renderItems} />}
 
-          {/* CTA */}
-          {(waUrl || emailUrl) && (
+          {/* CTA — el pedido va por el carrito; acá queda solo el contacto por email. */}
+          {emailUrl && (
             <Reveal className="mx-auto max-w-[1600px] px-5 pb-14 md:px-16 md:pb-16">
               <div className="flex flex-wrap items-end justify-between gap-8 border-t border-(--site-border) pt-14 md:pt-16">
                 <div className="max-w-[640px]">
@@ -229,18 +243,10 @@ export default async function ProyectoDetallePage({ params }: { params: Promise<
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  {waUrl && (
-                    <a href={waUrl} target="_blank" rel="noopener noreferrer" className="btn-invert inline-flex items-center gap-2.5 rounded-full px-7 py-3.5 text-sm font-semibold">
-                      <MessageCircle className="h-[18px] w-[18px]" aria-hidden />
-                      WhatsApp
-                    </a>
-                  )}
-                  {emailUrl && (
-                    <a href={emailUrl} target="_blank" rel="noopener noreferrer" className="btn-invert inline-flex items-center gap-2.5 rounded-full px-7 py-3.5 text-sm font-semibold">
-                      <Mail className="h-[18px] w-[18px]" aria-hidden />
-                      Email
-                    </a>
-                  )}
+                  <a href={emailUrl} target="_blank" rel="noopener noreferrer" className="btn-invert inline-flex items-center gap-2.5 rounded-full px-7 py-3.5 text-sm font-semibold">
+                    <Mail className="h-[18px] w-[18px]" aria-hidden />
+                    Email
+                  </a>
                 </div>
               </div>
             </Reveal>

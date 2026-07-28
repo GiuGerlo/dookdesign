@@ -6,10 +6,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { X } from 'lucide-react'
 import { sileo } from 'sileo'
-import { projectSchema, type ProjectFormData, slugify } from '@/lib/admin/schemas'
+import { projectSchema, type ProjectFormData, type ProjectColor, slugify } from '@/lib/admin/schemas'
 import { createProject, updateProject } from '@/lib/admin/actions'
 import { RendersUpload } from './RendersUpload'
 import { EnvironmentRendersUpload } from './EnvironmentRendersUpload'
+import { ColorsEditor } from './ColorsEditor'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
@@ -67,6 +68,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
           render_focus: (project.render_focus as Record<string, number>) ?? {},
           render_focus_x: (project.render_focus_x as Record<string, number>) ?? {},
           environment_layout: (project.environment_layout as ProjectFormData['environment_layout']) ?? {},
+          colors: (project.colors as ProjectColor[]) ?? [],
         }
       : {
           title: '',
@@ -82,6 +84,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
           render_focus: {},
           render_focus_x: {},
           environment_layout: {},
+          colors: [],
         },
   })
 
@@ -106,6 +109,12 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
   }
 
   async function onSubmit(data: ProjectFormData) {
+    // Grill #3: ningún color puede apuntar a un render borrado. Bloquear hasta reasignar.
+    const dangling = data.colors.filter(c => !data.renders.includes(c.render))
+    if (dangling.length > 0) {
+      sileo.error({ title: 'Hay colores sin imagen válida', description: 'Reasigná la imagen de cada color antes de guardar.' })
+      return
+    }
     try {
       if (isEdit && project) {
         await updateProject(project.id, data)
@@ -283,6 +292,26 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
                 onFocusChange={m => setValue('render_focus', m, { shouldDirty: true })}
                 focusX={watch('render_focus_x')}
                 onFocusXChange={m => setValue('render_focus_x', m, { shouldDirty: true })}
+              />
+            )}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Colores */}
+      <Card className="bg-card border-white/[0.08] mb-5 break-inside-avoid">
+        <CardHeader className="pb-4 pt-5">
+          <CardTitle className={labelClass}>Colores</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Controller
+            name="colors"
+            control={control}
+            render={({ field }) => (
+              <ColorsEditor
+                value={field.value}
+                renders={watch('renders')}
+                onChange={field.onChange}
               />
             )}
           />

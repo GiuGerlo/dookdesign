@@ -47,7 +47,7 @@ export default async function ProyectosPage() {
 
   return (
     <>
-      <SiteNav />
+      <SiteNav whatsappUrl={settings?.whatsapp_url} />
       <main>
         <Reveal className="mx-auto max-w-[1600px] px-5 pb-10 pt-32 md:px-16 md:pb-12 md:pt-44">
           <p className="mb-6 text-[11px] font-medium uppercase tracking-[0.14em] text-(--text-secondary)">Portfolio</p>

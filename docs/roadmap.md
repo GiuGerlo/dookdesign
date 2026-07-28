@@ -20,6 +20,7 @@ Esquema de fases: **números 1–N**.
 | 5 | Galería pública + página de proyecto con animaciones | DONE | 2, 4 | 2026-07-25 |
 | 6 | Post-launch: portada video, /proyectos editable, keep-alive + observabilidad + hardening | DONE | 5 | 2026-07-26 |
 | 7 | Post-launch lote: entorno dev, medidas/entrega, banner envíos, logos + banderas | DONE | 6 | 2026-07-27 |
+| 8 | Colores por producto + carrito de presupuesto por WhatsApp | en progreso | 7 | — |
 
 > Ajustá las fases a medida que se concreten. Cada fase: spec → plan → tasks → cierre
 > (ver `.claude/rules/docs-workflow.md`).

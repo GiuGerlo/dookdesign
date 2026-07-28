@@ -15,6 +15,20 @@ Historial por fase. Formato en `.claude/rules/docs-workflow.md`.
 **Migración**: nada / pasos.
 -->
 
+## [2026-07-28] fase-8 — Colores por producto + carrito de presupuesto por WhatsApp
+
+**Resumen**: Cada proyecto puede definir sus colores reales (hex + nombre) asociados a una imagen; en el detalle los swatches mueven el carrusel a la imagen del color. Se agrega un carrito (localStorage) accesible desde el navbar: el visitante junta productos por color y cantidad, escribe el lugar de envío y genera un pedido de presupuesto por WhatsApp a Agustín. Sin pagos ni checkout (ver ADR 0002).
+
+**Cambios**:
+- **Colores** (`projects.colors`, jsonb, cada uno `{ hex, name, render }`): card "Colores" en el CRUD con picker `react-colorful` (hex exacto, no presets), nombre y asociación a un render subido. Si se borra el render asociado, el color se marca "sin imagen" y bloquea guardar hasta reasignar.
+- **Detalle público**: swatches de color bajo el título del hero → al tocar uno el carrusel salta a la imagen de ese color (Embla `scrollTo`). Con colores, elegir uno es obligatorio para agregar al carrito; sin colores se agrega igual.
+- **Carrito** (`src/lib/site/cart.ts`): store cliente con `useSyncExternalStore` + localStorage (`dook_cart`), sin backend ni Provider. Ícono con badge siempre visible en el navbar; drawer deslizante con lista (thumb, color, cantidad, eliminar), campo obligatorio "Enviar a" y botón "Pedir presupuesto".
+- **Pedido**: `buildCartWhatsappUrl` arma un mensaje multilínea (producto — color — cantidad + lugar) → `wa.me` al número de `site_settings`. Tras abrir WhatsApp el drawer pasa a confirmación (vaciado manual: no se puede saber si el visitante envió).
+- Se reemplaza el botón WhatsApp directo del detalle por el flujo de carrito (queda el contacto por email).
+
+**Breaking**: nada.
+**Migración**: `0021_project_colors.sql` (aditiva, `colors jsonb default '[]'`). **Deps**: +`react-colorful`.
+
 ## [2026-07-27] post-launch-lote — Entorno dev, medidas/entrega, banner de envíos, logos y banderas
 
 **Resumen**: Lote de fixes/features post-launch: se monta el entorno `dev` (preview con dominio fijo para que Agustín valide antes de prod), se agregan medidas y entrega estimada a los proyectos, un banner de "Envíos a todo el país" en el footer, y se mejoran analytics (banderas + nombre de país) y los logos del footer.

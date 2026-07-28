@@ -11,12 +11,13 @@ Portfolio de **Agustín Cavallera**, diseñador industrial. Galería visual de d
 **Sitio público**
 - Home con portada editable (imagen desktop + móvil, cada una con su encuadre) y grilla curada de proyectos.
 - Listado `/proyectos` con grilla libre editable desde el admin.
-- Detalle de proyecto `/proyectos/[slug]`: hero carrusel, renders de entorno, ficha (categoría, año, materiales, medidas), galería con lightbox y CTA de contacto por WhatsApp/Email.
+- Detalle de proyecto `/proyectos/[slug]`: hero carrusel, renders de entorno, ficha (categoría, año, materiales, medidas), galería con lightbox y variantes de color (swatches que mueven el carrusel a la imagen del color).
+- Carrito de presupuesto (persistente en el navegador): se juntan productos por color y cantidad y se genera un pedido por WhatsApp a Agustín con el lugar de envío. Sin pagos ni checkout.
 - Banner "Envíos a todo el país", footer con contacto y redes.
 - Tema claro/oscuro con transición animada, animaciones de scroll, 100% responsive.
 
 **Panel admin** (`/admin`, protegido con login)
-- CRUD de proyectos con upload de renders por dropzone a Supabase Storage, reordenamiento drag-and-drop, encuadre por imagen.
+- CRUD de proyectos con upload de renders por dropzone a Supabase Storage, reordenamiento drag-and-drop, encuadre por imagen y colores del producto (picker de color asociado a un render).
 - Gestión de portada del home, página `/proyectos`, categorías y configuración global (about, contacto).
 - Dashboard de analytics (Vercel Web Analytics) con países, dispositivos, referrers y páginas top.
 
@@ -33,7 +34,7 @@ Portfolio de **Agustín Cavallera**, diseñador industrial. Galería visual de d
 - **Estilos**: Tailwind CSS v4 + shadcn/ui (variante Base UI) en el admin.
 - **DB / Storage / Auth**: Supabase (Postgres con RLS + Storage con CDN para renders + Supabase Auth).
 - **Animaciones**: `motion`, `embla-carousel-react`, `yet-another-react-lightbox`.
-- **Forms**: React Hook Form + Zod.
+- **Forms**: React Hook Form + Zod. Picker de color: `react-colorful`.
 - **Infra**: Vercel (deploy automático por push; prod desde `main`, preview desde `dev`).
 - **Gestor de paquetes**: pnpm (siempre pnpm, nunca npm).
 
@@ -75,7 +76,7 @@ pnpm typecheck   # tsc --noEmit
 
 ## Base de datos
 
-Migraciones versionadas en `supabase/migrations/` (`0001` … `0020`). Schema principal: tabla `projects` (metadata + renders + medidas + entrega), `categories`, `site_settings`, con RLS por rol (lectura pública de publicados, escritura solo admin) y bucket público `renders`.
+Migraciones versionadas en `supabase/migrations/` (`0001` … `0021`). Schema principal: tabla `projects` (metadata + renders + medidas + entrega + colores), `categories`, `site_settings`, con RLS por rol (lectura pública de publicados, escritura solo admin) y bucket público `renders`. El carrito no usa DB: vive en el navegador (localStorage).
 
 ---
 

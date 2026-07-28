@@ -88,7 +88,7 @@ export default async function Home() {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <SiteNav overHero />
+      <SiteNav overHero whatsappUrl={settings?.whatsapp_url} />
       <main>
         <h1 className="sr-only">DooK Design — Diseño industrial de Agustín Cavallera</h1>
         <HomeHero

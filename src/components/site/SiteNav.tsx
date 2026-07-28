@@ -3,7 +3,10 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { ShoppingBag } from 'lucide-react'
 import { ThemeToggle } from '@/components/site/ThemeToggle'
+import { CartDrawer } from '@/components/site/CartDrawer'
+import { useCart } from '@/lib/site/cart'
 
 const MENU_LINKS = [
   { label: 'Sobre mí', href: '/#sobre' },
@@ -13,9 +16,18 @@ const MENU_LINKS = [
 
 // Nav fija del sitio: transparente arriba, fondo + blur al scrollear.
 // `overHero`: la página abre con una foto oscura fullscreen → íconos/logo en claro hasta scrollear.
-export function SiteNav({ overHero = false, scrolledLabel }: { overHero?: boolean; scrolledLabel?: string }) {
+export function SiteNav({
+  overHero = false,
+  scrolledLabel,
+  whatsappUrl,
+}: {
+  overHero?: boolean
+  scrolledLabel?: string
+  whatsappUrl?: string | null
+}) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const { count, openCart } = useCart()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50)
@@ -61,6 +73,19 @@ export function SiteNav({ overHero = false, scrolledLabel }: { overHero?: boolea
         )}
 
         <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={openCart}
+            aria-label={count > 0 ? `Abrir carrito (${count})` : 'Abrir carrito'}
+            className="relative flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border border-current/40 text-current transition-colors duration-300"
+          >
+            <ShoppingBag className="h-[18px] w-[18px]" aria-hidden />
+            {count > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-(--brand-ink) px-1 text-[10px] font-bold tabular-nums text-(--bg)">
+                {count}
+              </span>
+            )}
+          </button>
           <ThemeToggle className="flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border border-current/40 text-current transition-colors duration-300" />
           <button
             type="button"
@@ -118,6 +143,8 @@ export function SiteNav({ overHero = false, scrolledLabel }: { overHero?: boolea
           ))}
         </div>
       </div>
+
+      <CartDrawer whatsappUrl={whatsappUrl} />
     </>
   )
 }
